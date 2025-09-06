@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.13.0] - 2025-09-06
+
 ### Feat
 - Translated thumbnails are now back to original
 
@@ -453,7 +455,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *Note: This changelog was introduced in version 2.2.30. For earlier version history, please refer to the [GitHub releases](https://github.com/YouG-o/YouTube_No_Translation/releases).*
 
-[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.4...HEAD
+[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.13.0...HEAD
+[2.13.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.4...v2.13.0
 [2.12.4]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.3...v2.12.4
 [2.12.3]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.2...v2.12.3
 [2.12.2]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.1...v2.12.2

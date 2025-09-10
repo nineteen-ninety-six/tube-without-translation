@@ -12,6 +12,7 @@ import { DEFAULT_SETTINGS } from "../config/constants";
 
 
 const titleToggle = document.getElementById('titleTranslation') as HTMLInputElement;
+const originalThumbnailsToggle = document.getElementById('originalThumbnails') as HTMLInputElement;
 const audioToggle = document.getElementById('audioTranslation') as HTMLInputElement;
 const audioLanguageSelect = document.getElementById('audioLanguage') as HTMLSelectElement;
 const descriptionToggle = document.getElementById('descriptionTranslation') as HTMLInputElement;
@@ -122,6 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Apply settings to UI elements
         titleToggle.checked = settings.titleTranslation;
+        originalThumbnailsToggle.checked = settings.originalThumbnails.enabled;
         audioToggle.checked = settings.audioTranslation.enabled;
         audioLanguageSelect.value = settings.audioTranslation.language;
         descriptionToggle.checked = settings.descriptionTranslation;
@@ -143,6 +145,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             '[YNT] Settings loaded - Title translation prevention is: %c%s',
             settings.titleTranslation ? 'color: green; font-weight: bold' : 'color: red; font-weight: bold',
             settings.titleTranslation ? 'ON' : 'OFF'
+        );
+        console.log(
+            '[YNT] Settings loaded - Original thumbnails is: %c%s',
+            settings.originalThumbnails.enabled ? 'color: green; font-weight: bold' : 'color: red; font-weight: bold',
+            settings.originalThumbnails.enabled ? 'ON' : 'OFF'
         );
         console.log(
             '[YNT] Settings loaded - Audio translation prevention is: %c%s',
@@ -249,6 +256,15 @@ titleToggle.addEventListener('change', () =>
         element: titleToggle,
         storageKey: 'titleTranslation',
         messageFeature: 'titles'
+    })
+);
+
+originalThumbnailsToggle.addEventListener('change', () =>
+    handleToggleChange({
+        element: originalThumbnailsToggle,
+        storageKey: 'originalThumbnails',
+        storagePath: ['originalThumbnails', 'enabled'],
+        messageFeature: 'thumbnails'
     })
 );
 

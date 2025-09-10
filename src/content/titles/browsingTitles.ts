@@ -402,7 +402,7 @@ export async function refreshBrowsingVideos(): Promise<void> {
         }
         
         // Skip thumbnail restoration for videos already marked as original
-        if (!titleElement.hasAttribute('ynt-original')) {
+        if (!titleElement.hasAttribute('ynt-original') && currentSettings?.originalThumbnails?.enabled) {
             restoreOriginalThumbnail(videoId, titleElement);
         }
 

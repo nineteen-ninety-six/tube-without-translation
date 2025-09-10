@@ -43,10 +43,18 @@ async function migrateSettings() {
         }
 
         // Check if subtitlesTranslation.asrEnabled needs to be added
-        if (settings.subtitlesTranslation.asrEnabled !== true && 
-            settings.subtitlesTranslation.asrEnabled !== false) {
+        if (typeof settings.subtitlesTranslation.asrEnabled !== 'boolean') {
             console.log('[YNT-Debug] Adding asrEnabled property to subtitlesTranslation');
             settings.subtitlesTranslation.asrEnabled = false;
+            needsUpdate = true;
+        }
+
+        // Check if originalThumbnails needs to be added
+        if (!settings.originalThumbnails) {
+            console.log('[YNT-Debug] Adding originalThumbnails setting');
+            settings.originalThumbnails = {
+                enabled: true
+            };
             needsUpdate = true;
         }
 

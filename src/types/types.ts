@@ -10,7 +10,7 @@
 
 export interface Message {
     action: 'toggleTranslation';
-    feature: 'titles' | 'audio' | 'description' | 'subtitles';
+    feature: 'titles' | 'thumbnails' | 'audio' | 'description' | 'subtitles';
     isEnabled: boolean;
 }
 
@@ -35,6 +35,9 @@ export interface YouTubePlayer extends HTMLElement {
 
 export interface ExtensionSettings {
     titleTranslation: boolean;
+    originalThumbnails: {
+        enabled: boolean;
+    };
     audioTranslation: {
         enabled: boolean;
         language: string;

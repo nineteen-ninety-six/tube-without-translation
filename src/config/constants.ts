@@ -13,6 +13,9 @@ import { ExtensionSettings } from '../types/types';
 // Default settings as a constant
 export const DEFAULT_SETTINGS: ExtensionSettings = {
     titleTranslation: true,
+    originalThumbnails: {
+        enabled: true,
+    },
     audioTranslation: {
         enabled: true,
         language: 'original',

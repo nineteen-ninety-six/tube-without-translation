@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Feat
+- Added an 'Original Thumbnails' toggle to popup / settings page.
+
+
 ## [2.13.0] - 2025-09-06
 
 ### Feat

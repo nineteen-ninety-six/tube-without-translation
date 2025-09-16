@@ -87,19 +87,50 @@ export async function getOriginalChannelDescriptionDataAPI(identifier: { id?: st
  * @returns The short description string, or null if not found.
  */
 function getShortChannelCurrentDescription(): string | null {
-    // Select the preview description container
-    const previewElement = document.querySelector('yt-description-preview-view-model');
-    if (!previewElement) {
-        return null;
+    // Try multiple selectors to handle YouTube DOM variations
+    const selectors = [
+        // New / current structure (example provided)
+        'yt-description-preview-view-model yt-truncated-text .yt-core-attributed-string',
+        'yt-description-preview-view-model .yt-truncated-text__truncated-text-content:not(.yt-truncated-text__truncated-text-content--hidden-text-content) .yt-core-attributed-string',
+        // Older/trusted selectors
+        'yt-description-preview-view-model .truncated-text-wiz__truncated-text-content:not(.truncated-text-wiz__truncated-text-content--hidden-text-content) .yt-core-attributed-string',
+        'ytd-channel-about-metadata-renderer yt-formatted-string#description',
+        'yt-formatted-string#description',
+        '.yt-core-attributed-string'
+    ];
+
+    for (const sel of selectors) {
+        const el = document.querySelector(sel) as HTMLElement | null;
+        if (el && typeof el.textContent === 'string') {
+            const text = el.textContent.trim();
+            if (text.length > 0) {
+                return text;
+            }
+        }
     }
 
-    // Select the span containing the visible short description
-    const textSpan = previewElement.querySelector(
-        '.truncated-text-wiz__truncated-text-content:not(.truncated-text-wiz__truncated-text-content--hidden-text-content) .yt-core-attributed-string'
-    ) as HTMLSpanElement | null;
+    return null;
+}
 
-    if (textSpan && typeof textSpan.textContent === 'string') {
-        return textSpan.textContent.trim();
+/**
+ * Returns the element node that contains the short channel description text
+ * so it can be updated in-place. Returns null if not found.
+ */
+function getShortChannelCurrentDescriptionElement(): HTMLElement | null {
+    const selectors = [
+        'yt-description-preview-view-model yt-truncated-text .yt-core-attributed-string',
+        'yt-description-preview-view-model .yt-truncated-text__truncated-text-content:not(.yt-truncated-text__truncated-text-content--hidden-text-content) .yt-core-attributed-string',
+        'yt-description-preview-view-model .truncated-text-wiz__truncated-text-content:not(.truncated-text-wiz__truncated-text-content--hidden-text-content) .yt-core-attributed-string',
+        'ytd-channel-about-metadata-renderer yt-formatted-string#description',
+        'yt-formatted-string#description',
+        '.yt-core-attributed-string'
+    ];
+
+    for (const sel of selectors) {
+        const el = document.querySelector(sel) as HTMLElement | null;
+        if (el) {
+            return el;
+        }
     }
 
     return null;
@@ -211,30 +242,23 @@ export async function refreshChannelShortDescription(): Promise<void> {
 
     // Check if update is needed
     if (shouldUpdateChannelDescription(originalDescription, shortDescription)) {
-        // Select the preview description container
-        const previewElement = document.querySelector('yt-description-preview-view-model');
-        if (previewElement) {
-            // Select the span containing the visible short description
-            const textSpan = previewElement.querySelector(
-                '.truncated-text-wiz__truncated-text-content:not(.truncated-text-wiz__truncated-text-content--hidden-text-content) .yt-core-attributed-string'
-            ) as HTMLSpanElement | null;
-
-            if (textSpan) {
-                textSpan.textContent = originalDescription || "";
-                // Mark that we updated the short description
-                textSpan.setAttribute('data-original-updated', finalChannelId);
-                descriptionLog("Short channel description updated with original description.");
-            }
+        // Find the element that contains the visible short description
+        const textSpan = getShortChannelCurrentDescriptionElement();
+        if (textSpan) {
+            textSpan.textContent = originalDescription || "";
+            // Mark that we updated the short description
+            textSpan.setAttribute('data-original-updated', finalChannelId || '');
+            descriptionLog("Short channel description updated with original description.");
+        } else {
+            descriptionErrorLog("Preview text element not found for update.");
         }
     }
 
     // Setup modal observer if description was updated OR if it was previously updated
     const previewElement = document.querySelector('yt-description-preview-view-model');
-    const textSpan = previewElement?.querySelector(
-        '.truncated-text-wiz__truncated-text-content:not(.truncated-text-wiz__truncated-text-content--hidden-text-content) .yt-core-attributed-string'
-    ) as HTMLSpanElement | null;
+    const previewTextSpan = previewElement ? previewElement.querySelector('.yt-core-attributed-string') as HTMLSpanElement | null : null;
     
-    if (originalDescription !== null && textSpan?.hasAttribute('data-original-updated')) {
+    if (originalDescription !== null && previewTextSpan?.hasAttribute('data-original-updated')) {
         observeChannelDescriptionModal(originalDescription);
     }
 }

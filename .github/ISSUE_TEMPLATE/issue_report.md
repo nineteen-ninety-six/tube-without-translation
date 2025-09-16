@@ -33,10 +33,11 @@ assignees: 'YouG-o'
 
 ## Extension Settings
 <!-- Please check which features you have enabled in the extension popup: -->
-- [ ] Title translation prevention
-- [ ] Description translation prevention  
-- [ ] Audio language preference
-- [ ] Subtitles language preference
+- [ ] Original Titles
+- [ ] Original Descrptions  
+- [ ] Original Thumbnails  
+- [ ] Audio language preference : (Language if enabled)
+- [ ] Subtitles language preference : (Language if enabled)
 - [ ] YouTube Data API v3
 
 ## Screenshots (Optional)
@@ -58,5 +59,5 @@ To do this:
 
 ## Other YouTube-related extensions you are using
 <!-- Please list any other browser extensions/add-ons you have installed that interact with YouTube -->
-<!-- This helps identify possible conflicts or side effects. For example : DeArrow can cause conflicts as it also interact with videos titles -->
+<!-- This helps identify possible conflicts or side effects. For example : 'DeArrow' extension can cause conflicts as it also interact with videos titles -->
 

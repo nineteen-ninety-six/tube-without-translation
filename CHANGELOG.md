@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.0] - 2025-09-16
+
 ### Feat
 - Added an 'Original Thumbnails' toggle to popup / settings page.
+
+### Fix 
+- Updated channel description selectors to support the latest YouTube channel page DOM structure.
+- On subscription page, video descriptions are now original when videos are displayed as List.
+- Added a debounce to page title mutation observer to prevent potential infinite title replacement (could cause high CPU usage and tab crash)
 
 
 ## [2.13.0] - 2025-09-06
@@ -459,7 +466,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *Note: This changelog was introduced in version 2.2.30. For earlier version history, please refer to the [GitHub releases](https://github.com/YouG-o/YouTube_No_Translation/releases).*
 
-[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.13.0...HEAD
+[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.0...HEAD
+[2.14.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.13.0...v2.14.0
 [2.13.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.4...v2.13.0
 [2.12.4]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.3...v2.12.4
 [2.12.3]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.2...v2.12.3

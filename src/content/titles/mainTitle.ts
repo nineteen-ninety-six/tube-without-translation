@@ -23,12 +23,22 @@ let embedTitleContentObserver: MutationObserver | null = null;
 let miniplayerTitleContentObserver: MutationObserver | null = null;
 let mainTitleIsUpdating = false;
 
+let pageTitleDebounceTimer: number | null = null;
+const PAGE_TITLE_DEBOUNCE_MS = 200;
+let mainTitleContentDebounceTimer: number | null = null;
+const MAIN_TITLE_CONTENT_DEBOUNCE_MS = 200;
+
+
 // --- Utility Functions
 export function cleanupMainTitleContentObserver(): void {
     if (mainTitleContentObserver) {
         //mainTitleLog('Cleaning up title content observer');
         mainTitleContentObserver.disconnect();
         mainTitleContentObserver = null;
+    }
+    if (mainTitleContentDebounceTimer !== null) {
+        clearTimeout(mainTitleContentDebounceTimer);
+        mainTitleContentDebounceTimer = null;
     }
 }
 
@@ -45,6 +55,12 @@ export function cleanupPageTitleObserver(): void {
         //mainTitleLog('Cleaning up page title observer');
         pageTitleObserver.disconnect();
         pageTitleObserver = null;
+    }
+    
+    // Clear debounce timer when cleaning up
+    if (pageTitleDebounceTimer !== null) {
+        clearTimeout(pageTitleDebounceTimer);
+        pageTitleDebounceTimer = null;
     }
 }
 
@@ -81,7 +97,6 @@ export function updateMainTitleElement(element: HTMLElement, title: string, vide
         'color: #fcd34d'       
     );
 
-    
     element.removeAttribute('is-empty');
     element.innerText = title;
 
@@ -107,20 +122,25 @@ export function updateMainTitleElement(element: HTMLElement, title: string, vide
     // --- Block YouTube from adding multiple text nodes
     mainTitleContentObserver = new MutationObserver((mutations) => {
         if (mainTitleIsUpdating) return;
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'childList') {
-                // --- Check if there are multiple text nodes
-                const textNodes = Array.from(element.childNodes)
-                    .filter(node => node.nodeType === Node.TEXT_NODE);
-                
-                if (textNodes.length > 1) {
-                    mainTitleIsUpdating = true;
-                    element.innerText = title;
-                    mainTitleIsUpdating = false;
-                    mainTitleLog('Multiple text nodes detected, cleaning up');
-                }
+
+        // Clear existing debounce timer
+        if (mainTitleContentDebounceTimer !== null) {
+            clearTimeout(mainTitleContentDebounceTimer);
+        }
+
+        // Set new debounce timer
+        mainTitleContentDebounceTimer = window.setTimeout(() => {
+            const textNodes = Array.from(element.childNodes)
+                .filter(node => node.nodeType === Node.TEXT_NODE);
+
+            if (textNodes.length > 1) {
+                mainTitleIsUpdating = true;
+                element.innerText = title;
+                mainTitleIsUpdating = false;
+                mainTitleLog('Multiple text nodes detected, cleaning up');
             }
-        });
+            mainTitleContentDebounceTimer = null;
+        }, MAIN_TITLE_CONTENT_DEBOUNCE_MS);
     });
 
     mainTitleContentObserver.observe(element, {
@@ -144,10 +164,19 @@ function updatePageTitle(mainTitle: string): void {
     if (titleElement) {
         pageTitleObserver = new MutationObserver(() => {
             if (normalizeText(document.title) !== normalizeText(expectedTitle)) {
-                mainTitleLog('YouTube changed page title, reverting');
-                //mainTitleLog('Current:', normalizeText(document.title));
-                //mainTitleLog('Expected:', normalizeText(expectedTitle));
-                document.title = expectedTitle;
+                // Clear existing debounce timer
+                if (pageTitleDebounceTimer !== null) {
+                    clearTimeout(pageTitleDebounceTimer);
+                }
+                
+                // Set new debounce timer
+                pageTitleDebounceTimer = window.setTimeout(() => {
+                    if (normalizeText(document.title) !== normalizeText(expectedTitle)) {
+                        mainTitleLog('YouTube changed page title, reverting');
+                        document.title = expectedTitle;
+                    }
+                    pageTitleDebounceTimer = null;
+                }, PAGE_TITLE_DEBOUNCE_MS);
             }
         });
         

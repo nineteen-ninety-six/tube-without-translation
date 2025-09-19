@@ -380,8 +380,7 @@ export async function refreshBrowsingVideos(): Promise<void> {
 
     // Set new debounce timer
     browsingTitlesDebounceTimer = window.setTimeout(async () => {
-                browsingTitlesLog('Debounce timer triggered - starting browsing videos refresh');
-
+        
         // Select classic video titles
         const classicTitles = Array.from(document.querySelectorAll('#video-title')) as HTMLElement[];
 

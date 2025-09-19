@@ -232,7 +232,7 @@ let lastSearchRefresh = 0;
 let lastPlaylistRefresh = 0;
 
 // --- Replace throttle with debounced timers
-const OBSERVERS_DEBOUNCE_MS = 100;
+const OBSERVERS_DEBOUNCE_MS = 200;
 let pageVideosDebounceTimer: number | null = null;
 let recommendedDebounceTimer: number | null = null;
 let searchDebounceTimer: number | null = null;

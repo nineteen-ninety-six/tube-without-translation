@@ -150,7 +150,7 @@ export async function refreshEndScreenTitles(): Promise<void> {
         return;
     }
 
-    titlesLog(`Found ${endScreenTitles.length} end screen video titles`);
+    //titlesLog(`Found ${endScreenTitles.length} end screen video titles`);
 
     for (const titleElement of endScreenTitles) {
         const processingResult = shouldProcessEndScreenTitleElement(titleElement);

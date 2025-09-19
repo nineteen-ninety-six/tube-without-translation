@@ -273,15 +273,32 @@ export async function refreshMainTitle(): Promise<void> {
             }
 
             // Skip if title is already correct and doesn't have is-empty attribute
-            if (normalizeText(currentTitle) === normalizeText(originalTitle) && !mainTitle.hasAttribute('is-empty') && !mainTitle.hasAttribute('data-ynt-modified')) {
-                mainTitleLog('Main title is already original');
+            if (normalizeText(currentTitle) === normalizeText(originalTitle) && 
+                !mainTitle.hasAttribute('is-empty')) {
+                
+                if (mainTitle.hasAttribute('data-ynt-modified')) {
+                    //mainTitleLog('Main title already updated by extension with correct content, skipping');
+                } else {
+                    mainTitleLog('Main title is already original');
+                }
+                
+                // Still check if page title needs updating even if main title is correct
+                const expectedPageTitle = `${originalTitle} - YouTube`;
+                if (normalizeText(document.title) !== normalizeText(expectedPageTitle)) {
+                    updatePageTitle(originalTitle);
+                }
                 return;
             }
 
             // Apply the original title
             try {
                 updateMainTitleElement(mainTitle, originalTitle, videoId);
-                updatePageTitle(originalTitle);
+                
+                // Only update page title if it's different from expected
+                const expectedPageTitle = `${originalTitle} - YouTube`;
+                if (normalizeText(document.title) !== normalizeText(expectedPageTitle)) {
+                    updatePageTitle(originalTitle);
+                }
             } catch (error) {
                 mainTitleErrorLog(`Failed to update main title:`, error);
             }
@@ -342,7 +359,12 @@ export async function refreshEmbedTitle(): Promise<void> {
                 // Apply the original title
                 try {
                     updateEmbedTitleElement(embedTitle, originalTitle, videoId);
-                    updatePageTitle(originalTitle);
+                    
+                    // Only update page title if it's different from expected
+                    const expectedPageTitle = `${originalTitle} - YouTube`;
+                    if (normalizeText(document.title) !== normalizeText(expectedPageTitle)) {
+                        updatePageTitle(originalTitle);
+                    }
                 } catch (error) {
                     mainTitleErrorLog(`Failed to update embed title:`, error);
                 }

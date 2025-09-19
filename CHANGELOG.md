@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.1] - 2025-09-19
+
+### Fix
+- Prevented unnecessary page title updates in `refreshMainTitle` and `refreshEmbedTitle` functions when the page title is already correct. Avoids redundant DOM updates and logs.
+
+
 ## [2.14.0] - 2025-09-16
 
 ### Feat
@@ -466,7 +472,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *Note: This changelog was introduced in version 2.2.30. For earlier version history, please refer to the [GitHub releases](https://github.com/YouG-o/YouTube_No_Translation/releases).*
 
-[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.0...HEAD
+[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.1...HEAD
+[2.14.1]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.0...v2.14.1
 [2.14.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.13.0...v2.14.0
 [2.13.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.4...v2.13.0
 [2.12.4]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.3...v2.12.4

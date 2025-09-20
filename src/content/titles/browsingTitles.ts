@@ -25,7 +25,7 @@ export let lastBrowsingShortsRefresh = 0;
 export function setLastBrowsingShortsRefresh(value: number) {
     lastBrowsingShortsRefresh = value;
 }
-export const TITLES_DEBOUNCE = 200;
+export const TITLES_DEBOUNCE = 10;
 const browsingTitlesFallbackQueue = new Set<string>();
 const processingVideos = new Set<string>(); // Track individual videos being processed
 

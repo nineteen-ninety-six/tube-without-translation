@@ -226,13 +226,9 @@ let recommendedObserver: MutationObserver | null = null;
 let searchObserver: MutationObserver | null = null;
 let playlistObserver: MutationObserver | null = null;
 
-let lastHomeRefresh = 0;
-let lastRecommendedRefresh = 0;
-let lastSearchRefresh = 0;
-let lastPlaylistRefresh = 0;
 
-// --- Replace throttle with debounced timers
-const OBSERVERS_DEBOUNCE_MS = 200;
+const OBSERVERS_DEBOUNCE_MS = 100;
+
 let pageVideosDebounceTimer: number | null = null;
 let recommendedDebounceTimer: number | null = null;
 let searchDebounceTimer: number | null = null;
@@ -301,7 +297,7 @@ function handleGridMutationDebounced(pageName: string) {
         clearTimeout(pageVideosDebounceTimer);
     }
     pageVideosDebounceTimer = window.setTimeout(() => {
-        coreLog(`${pageName} page mutation debounced => triggering refresh`);
+        coreLog(`${pageName} page mutation detected.`);
         refreshBrowsingVideos();
         refreshShortsAlternativeFormat();
         setTimeout(() => {
@@ -494,7 +490,6 @@ function cleanupPageVideosObserver() {
     pageGridObservers = [];
     pageGridParentObserver?.disconnect();
     pageGridParentObserver = null;
-    lastHomeRefresh = 0;
 
     if (pageVideosDebounceTimer !== null) {
         clearTimeout(pageVideosDebounceTimer);
@@ -505,7 +500,6 @@ function cleanupPageVideosObserver() {
 function cleanupRecommendedVideosObserver() {
     recommendedObserver?.disconnect();
     recommendedObserver = null;
-    lastRecommendedRefresh = 0;
 
     if (recommendedDebounceTimer !== null) {
         clearTimeout(recommendedDebounceTimer);
@@ -516,7 +510,6 @@ function cleanupRecommendedVideosObserver() {
 function cleanupSearchResultsVideosObserver() {
     searchObserver?.disconnect();
     searchObserver = null;
-    lastSearchRefresh = 0;
 
     if (searchDebounceTimer !== null) {
         clearTimeout(searchDebounceTimer);
@@ -527,7 +520,6 @@ function cleanupSearchResultsVideosObserver() {
 function cleanupPlaylistVideosObserver() {
     playlistObserver?.disconnect();
     playlistObserver = null;
-    lastPlaylistRefresh = 0;
 
     if (playlistDebounceTimer !== null) {
         clearTimeout(playlistDebounceTimer);

@@ -36,9 +36,9 @@ export function restoreOriginalThumbnail(videoId: string, titleElement: HTMLElem
         // Replace 'vi_lc' with 'vi' and remove language code pattern
         let originalSrc = currentSrc.replace('vi_lc', 'vi');
         
-        // Remove language code pattern (e.g., '_fr', '_es', '_de', etc.)
-        // Pattern matches underscore followed by 2-3 letter language code before file extension
-        originalSrc = originalSrc.replace(/_[a-z]{2,3}(?=\.jpg)/i, '');
+        // Remove language code pattern (e.g., _fr, _es, _de, _zh-Hant, _pt-BR, etc.)
+        // Pattern matches underscore followed by letters, dashes, or both, before file extension
+        originalSrc = originalSrc.replace(/_[a-zA-Z-]+(?=\.jpg)/, '');
         
         // Update the thumbnail source
         thumbnailImg.src = originalSrc;

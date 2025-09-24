@@ -9,6 +9,8 @@
 
 import { ExtensionSettings, Message, ToggleConfig } from "../types/types";
 import { DEFAULT_SETTINGS } from "../config/constants";
+import { sanitizeSettings } from "../utils/settings";
+import { coreLog, coreErrorLog } from "../utils/logger";
 
 
 const titleToggle = document.getElementById('titleTranslation') as HTMLInputElement;
@@ -71,54 +73,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const data = await browser.storage.local.get('settings');
         
-        // Default values for missing properties
-        const defaultSettings = DEFAULT_SETTINGS;
-
         let settings: ExtensionSettings;
         let needsUpdate = false;
 
         if (!data.settings) {
             // No settings at all, use complete defaults
-            settings = defaultSettings;
+            settings = DEFAULT_SETTINGS;
             needsUpdate = true;
+            coreLog('No settings found, using defaults');
         } else {
-            // Start with existing settings
+            // Start with existing settings and sanitize them
             settings = { ...data.settings } as ExtensionSettings;
             
-            // Function to check and add missing properties recursively
-            function ensureProperty(obj: any, defaultObj: any, path: string = ''): boolean {
-                let updated = false;
-                
-                for (const key in defaultObj) {
-                    const currentPath = path ? `${path}.${key}` : key;
-                    
-                    if (obj[key] === undefined) {
-                        obj[key] = defaultObj[key];
-                        console.log(`[YNT] Added missing property: ${currentPath}`);
-                        updated = true;
-                    } else if (typeof defaultObj[key] === 'object' && defaultObj[key] !== null && !Array.isArray(defaultObj[key])) {
-                        // Recursively check nested objects
-                        if (typeof obj[key] !== 'object' || obj[key] === null) {
-                            obj[key] = defaultObj[key];
-                            console.log(`[YNT] Fixed invalid property type: ${currentPath}`);
-                            updated = true;
-                        } else {
-                            const nestedUpdated = ensureProperty(obj[key], defaultObj[key], currentPath);
-                            if (nestedUpdated) updated = true;
-                        }
-                    }
-                }
-                
-                return updated;
-            }
+            const { added, removed, fixed } = sanitizeSettings(settings, DEFAULT_SETTINGS);
+            const changes: string[] = [];
+            if (added.length) changes.push(`added: ${added.join(', ')}`);
+            if (removed.length) changes.push(`removed: ${removed.join(', ')}`);
+            if (fixed.length) changes.push(`fixed types: ${fixed.join(', ')}`);
             
-            needsUpdate = ensureProperty(settings, defaultSettings);
+            if (changes.length > 0) {
+                coreLog(`Settings sanitized: ${changes.join(' | ')}`);
+                needsUpdate = true;
+            }
         }
 
-        // Save updated settings if any properties were missing
+        // Save updated settings if any changes were made
         if (needsUpdate) {
             await browser.storage.local.set({ settings });
-            console.log('[YNT] Updated settings with missing properties');
+            coreLog('Updated settings saved to storage');
         }
 
         // Apply settings to UI elements
@@ -141,33 +123,33 @@ document.addEventListener('DOMContentLoaded', async () => {
             youtubeApiKeyContainer.style.display = 'block';
         }
         
-        console.log(
-            '[YNT] Settings loaded - Title translation prevention is: %c%s',
+        coreLog(
+            'Settings loaded - Title translation prevention is: %c%s',
             settings.titleTranslation ? 'color: green; font-weight: bold' : 'color: red; font-weight: bold',
             settings.titleTranslation ? 'ON' : 'OFF'
         );
-        console.log(
-            '[YNT] Settings loaded - Original thumbnails is: %c%s',
+        coreLog(
+            'Settings loaded - Original thumbnails is: %c%s',
             settings.originalThumbnails.enabled ? 'color: green; font-weight: bold' : 'color: red; font-weight: bold',
             settings.originalThumbnails.enabled ? 'ON' : 'OFF'
         );
-        console.log(
-            '[YNT] Settings loaded - Audio translation prevention is: %c%s',
+        coreLog(
+            'Settings loaded - Audio translation prevention is: %c%s',
             settings.audioTranslation.enabled ? 'color: green; font-weight: bold' : 'color: red; font-weight: bold',
             settings.audioTranslation.enabled ? 'ON' : 'OFF'
         );
-        console.log(
-            '[YNT] Settings loaded - Description translation prevention is: %c%s',
+        coreLog(
+            'Settings loaded - Description translation prevention is: %c%s',
             settings.descriptionTranslation ? 'color: green; font-weight: bold' : 'color: red; font-weight: bold',
             settings.descriptionTranslation ? 'ON' : 'OFF'
         );
-        console.log(
-            '[YNT] Settings loaded - Subtitles translation prevention is: %c%s',
+        coreLog(
+            'Settings loaded - Subtitles translation prevention is: %c%s',
             settings.subtitlesTranslation.enabled ? 'color: green; font-weight: bold' : 'color: red; font-weight: bold',
             settings.subtitlesTranslation.enabled ? 'ON' : 'OFF'
         );
     } catch (error) {
-        console.error('Load error:', error);
+        coreErrorLog('Settings load error:', error);
     }
 });
 
@@ -235,18 +217,18 @@ async function handleToggleChange(config: ToggleConfig) {
                         feature: config.messageFeature,
                         isEnabled
                     });
-                    console.log(`[YNT] Message sent to YouTube tab for ${config.messageFeature}`);
+                    coreLog(`Message sent to YouTube tab for ${config.messageFeature}`);
                 } else {
-                    console.log(`[YNT] Settings updated but not sending message (not a YouTube tab): ${tabs[0].url}`);
+                    coreLog(`Settings updated but not sending message (not a YouTube tab): ${tabs[0].url}`);
                 }
             }
         } catch (messageError) {
             // Ignore message sending errors (content script might not be loaded)
-            console.log(`[YNT] Could not send message to content script for ${config.messageFeature}:`, messageError);
+            coreLog(`Could not send message to content script for ${config.messageFeature}:`, messageError);
         }
-        console.log(`${config.storageKey} state updated`);
+        coreLog(`${config.storageKey} state updated`);
     } catch (error) {
-        console.error(`${config.storageKey} update error:`, error);
+        coreErrorLog(`${config.storageKey} update error:`, error);
     }
 }
 
@@ -342,7 +324,7 @@ subtitlesLanguageSelect.addEventListener('change', async () => {
             }
         });
         
-        console.log('Subtitles language saved:', selectedLanguage);
+        coreLog('Subtitles language saved:', selectedLanguage);
         
         // Inform active tab about the change (only if YouTube)
         try {
@@ -358,10 +340,10 @@ subtitlesLanguageSelect.addEventListener('change', async () => {
                 }
             }
         } catch (messageError) {
-            console.log('[YNT] Could not send language change message:', messageError);
+            coreLog('Could not send language change message:', messageError);
         }
     } catch (error) {
-        console.error('Failed to save subtitles language:', error);
+        coreErrorLog('Failed to save subtitles language:', error);
     }
 });
 
@@ -383,7 +365,7 @@ audioLanguageSelect.addEventListener('change', async () => {
             }
         });
         
-        console.log('Audio language saved:', selectedLanguage);
+        coreLog('Audio language saved:', selectedLanguage);
         
         // Inform active tab about the change (only if YouTube)
         try {
@@ -399,10 +381,10 @@ audioLanguageSelect.addEventListener('change', async () => {
                 }
             }
         } catch (messageError) {
-            console.log('[YNT] Could not send audio language change message:', messageError);
+            coreLog('Could not send audio language change message:', messageError);
         }
     } catch (error) {
-        console.error('Failed to save audio language:', error);
+        coreErrorLog('Failed to save audio language:', error);
     }
 });
 
@@ -440,9 +422,9 @@ youtubeDataApiKeyInput.addEventListener('input', async () => {
                 }
             }
         });
-        console.log('YouTube Data API key saved');
+        coreLog('YouTube Data API key saved');
     } catch (error) {
-        console.error('YouTube Data API key save error:', error);
+        coreErrorLog('YouTube Data API key save error:', error);
     }
 });
 
@@ -473,16 +455,16 @@ clearCacheBtn.addEventListener('click', async () => {
                         clearedTabs++;
                     } catch (messageError) {
                         // Ignore tabs where content script is not loaded
-                        console.log(`[YNT] Could not send clear cache message to tab ${tab.id}`);
+                        coreLog(`Could not send clear cache message to tab ${tab.id}`);
                     }
                 }
             }
             
             clearCacheBtn.textContent = `Cleared! (${clearedTabs} tabs)`;
-            console.log(`[YNT] Cache cleared successfully. Notified ${clearedTabs} YouTube tabs.`);
+            coreLog(`Cache cleared successfully. Notified ${clearedTabs} YouTube tabs.`);
         } catch (error) {
             clearCacheBtn.textContent = 'Cache Cleared!';
-            console.log('[YNT] Cache cleared from storage, but could not notify content scripts:', error);
+            coreLog('Cache cleared from storage, but could not notify content scripts:', error);
         }
         
         // Reset button after 2 seconds
@@ -492,7 +474,7 @@ clearCacheBtn.addEventListener('click', async () => {
         }, 2000);
         
     } catch (error) {
-        console.error('[YNT] Failed to clear cache:', error);
+        coreErrorLog('Failed to clear cache:', error);
         clearCacheBtn.textContent = 'Error';
         clearCacheBtn.disabled = false;
         
@@ -528,7 +510,7 @@ if (isWelcome) {
             } catch (error) {
                 reloadBtn.textContent = "Error reloading tabs";
                 reloadBtn.disabled = true;
-                console.error("[YNT] Failed to reload YouTube tabs:", error);
+                coreErrorLog("Failed to reload YouTube tabs:", error);
             }
         };
     }

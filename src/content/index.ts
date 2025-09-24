@@ -9,7 +9,9 @@
 
 import { coreLog, titlesLog, audioLog, descriptionLog, subtitlesLog } from '../utils/logger';
 import { ExtensionSettings } from '../types/types';
+import { DEFAULT_SETTINGS } from '../config/constants';
 import { isToggleMessage } from '../utils/utils';
+import { sanitizeSettings } from '../utils/settings';
 
 import { setupUrlObserver, setupVisibilityChangeListener, setupVideoPlayerListener, setupMainVideoObserver } from './observers';
 import { refreshBrowsingVideos } from './titles/browsingTitles';
@@ -29,6 +31,22 @@ export let currentSettings: ExtensionSettings | null = null;
 async function fetchSettings() {
     const data = await browser.storage.local.get('settings');
     currentSettings = data.settings as ExtensionSettings;
+    if (!currentSettings) {
+        coreLog('No settings found, using default settings.');
+        currentSettings = DEFAULT_SETTINGS;
+        await browser.storage.local.set({ settings: DEFAULT_SETTINGS });
+    } else {
+        // Sanitize settings: add missing, remove unknown, fix types
+        const { added, removed, fixed } = sanitizeSettings(currentSettings, DEFAULT_SETTINGS);
+        const changes: string[] = [];
+        if (added.length) changes.push(`added: ${added.join(', ')}`);
+        if (removed.length) changes.push(`removed: ${removed.join(', ')}`);
+        if (fixed.length) changes.push(`fixed types: ${fixed.join(', ')}`);
+        if (changes.length) {
+            coreLog(`Settings sanitized: ${changes.join(' | ')}`);
+            await browser.storage.local.set({ settings: currentSettings });
+        }
+    }
 };
 
 // Helper functions to detect if we're on an embed video (like youtube-nocookie.com)

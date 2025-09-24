@@ -114,7 +114,7 @@ async function toDoOnFirstInstall(details: InstalledDetails) {
 
 // Initialize settings when extension is installed or updated
 api.runtime.onInstalled.addListener(async (details: InstalledDetails) => {
-    await toDoOnFirstInstall(details);
-    await migrateSettings();
     await initializeSettings();
+    await migrateSettings();
+    await toDoOnFirstInstall(details);
 });

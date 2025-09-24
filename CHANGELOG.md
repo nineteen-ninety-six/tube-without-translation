@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.2] - 2025-09-24
+
+### Fix
+- Support all language codes in thumbnail restoration
+- Ensure settings completeness and type safety during initialization and migration
+
+### Changed
+- Centralized settings sanitization logic: all settings (content, background, popup) now use the new `sanitizeSettings` utility to auto-fill missing keys, remove unknown keys, and fix type mismatches. This improves robustness and maintainability.
+
+
 ## [2.14.1] - 2025-09-19
 
 ### Fix
@@ -472,7 +482,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *Note: This changelog was introduced in version 2.2.30. For earlier version history, please refer to the [GitHub releases](https://github.com/YouG-o/YouTube_No_Translation/releases).*
 
-[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.1...HEAD
+[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.2...HEAD
+[2.14.2]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.2...v2.14.2
 [2.14.1]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.0...v2.14.1
 [2.14.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.13.0...v2.14.0
 [2.13.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.4...v2.13.0

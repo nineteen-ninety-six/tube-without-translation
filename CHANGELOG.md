@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.15.0] - 2025-09-26
+
 ### Feat
 - Support for restoring original titles in post video suggestions grid (the videos shown after the main video ends, in the fullscreen grid overlay).
 
@@ -485,8 +487,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *Note: This changelog was introduced in version 2.2.30. For earlier version history, please refer to the [GitHub releases](https://github.com/YouG-o/YouTube_No_Translation/releases).*
 
-[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.2...HEAD
-[2.14.2]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.2...v2.14.2
+[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.0...HEAD
+[2.15.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.2...v2.15.0
+[2.14.2]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.1...v2.14.2
 [2.14.1]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.0...v2.14.1
 [2.14.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.13.0...v2.14.0
 [2.13.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.12.4...v2.13.0

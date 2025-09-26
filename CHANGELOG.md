@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Feat
+- Support for restoring original titles in post video suggestions grid (the videos shown after the main video ends, in the fullscreen grid overlay).
+
 ## [2.14.2] - 2025-09-24
 
 ### Fix

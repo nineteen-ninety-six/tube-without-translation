@@ -6,11 +6,11 @@ import { fetchOriginalTitle, updateBrowsingTitleElement } from './browsingTitles
 
 
 let endScreenObserver: MutationObserver | null = null;
-let lastEndScreenRefresh = 0;
-const END_SCREEN_THROTTLE = 2000; // Throttle to avoid too many calls
+let endScreenDebounceTimer: number | null = null;
+const END_SCREEN_DEBOUNCE = 500;
+const processingEndScreenTitle = new Set<string>();
 
 export function setupEndScreenObserver(): void {
-    // Cleanup existing observer
     cleanupEndScreenObserver();
     
     const player = document.getElementById('movie_player');
@@ -40,14 +40,17 @@ export function setupEndScreenObserver(): void {
         });
         
         if (shouldRefresh) {
-            const now = Date.now();
-            if (now - lastEndScreenRefresh >= END_SCREEN_THROTTLE) {
-                lastEndScreenRefresh = now;
-                // Small delay to ensure DOM is stable
-                setTimeout(() => {
-                    refreshEndScreenTitles();
-                }, 100);
+            // Clear existing debounce timer
+            if (endScreenDebounceTimer) {
+                clearTimeout(endScreenDebounceTimer);
             }
+            
+            // Set new debounce timer
+            endScreenDebounceTimer = window.setTimeout(() => {
+                titlesLog('Triggering end screen titles refresh');
+                refreshEndScreenTitles();
+                endScreenDebounceTimer = null;
+            }, END_SCREEN_DEBOUNCE);
         }
     });
     
@@ -65,15 +68,14 @@ export function cleanupEndScreenObserver(): void {
         endScreenObserver.disconnect();
         endScreenObserver = null;
     }
-    lastEndScreenRefresh = 0;
+    
+    if (endScreenDebounceTimer) {
+        clearTimeout(endScreenDebounceTimer);
+        endScreenDebounceTimer = null;
+    }
+    
+    processingEndScreenTitle.clear();
 }
-
-
-// Global variables for ending suggested videos
-let lastEndScreenTitleRefresh = 0;
-const ENDSCREEN_TITLE_THROTTLE = 1000;
-const processingEndScreenTitle = new Set<string>();
-
 
 // Check if end screen title element should be processed
 function shouldProcessEndScreenTitleElement(titleElement: HTMLElement): ProcessingResult {
@@ -138,19 +140,13 @@ function checkEndScreenTitleElementProcessingState(titleElement: HTMLElement, vi
 
 // Main function to refresh ending suggested videos
 export async function refreshEndScreenTitles(): Promise<void> {
-    const now = Date.now();
-    if (now - lastEndScreenTitleRefresh < ENDSCREEN_TITLE_THROTTLE) {
-        return;
-    }
-    lastEndScreenTitleRefresh = now;
-
     const endScreenTitles = document.querySelectorAll('.ytp-ce-video-title') as NodeListOf<HTMLElement>;
     
     if (endScreenTitles.length === 0) {
         return;
     }
 
-    //titlesLog(`Found ${endScreenTitles.length} end screen video titles`);
+    titlesLog(`Found ${endScreenTitles.length} end screen video titles to process`);
 
     for (const titleElement of endScreenTitles) {
         const processingResult = shouldProcessEndScreenTitleElement(titleElement);

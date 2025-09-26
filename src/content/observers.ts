@@ -25,6 +25,7 @@ import { setupNotificationTitlesObserver, cleanupNotificationTitlesObserver } fr
 import { cleanupChaptersObserver } from './chapters/chaptersIndex';
 import { cleanupAllSearchDescriptionsObservers } from './description/searchDescriptions';
 import { refreshEndScreenTitles, setupEndScreenObserver, cleanupEndScreenObserver } from './titles/endScreenTitles';
+import { setupPostVideoObserver, cleanupPostVideoObserver } from './titles/postVideoTitles';
 import { refreshChannelShortDescription, cleanupChannelDescriptionModalObserver } from './channel/channelDescription';
 import { refreshMainChannelName } from './channel/mainChannelName';
 import { patchChannelRendererBlocks } from './channel/ChannelRendererPatch';
@@ -657,6 +658,8 @@ function observersCleanup() {
 
     cleanupEndScreenObserver();
 
+    cleanupPostVideoObserver();
+
     cleanupChannelDescriptionModalObserver();
 }
 
@@ -781,7 +784,7 @@ function handleUrlChange() {
             currentSettings?.titleTranslation && recommendedVideosObserver();
             currentSettings?.descriptionTranslation && setupTimestampClickObserver();
             currentSettings?.titleTranslation && setupEndScreenObserver();
-
+            currentSettings?.titleTranslation && setupPostVideoObserver();
             
             // Handle fullscreen titles (embed titles are specific to /watch pages)
             if (currentSettings?.titleTranslation) {

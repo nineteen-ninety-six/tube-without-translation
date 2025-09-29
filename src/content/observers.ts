@@ -709,12 +709,13 @@ function handleUrlChange() {
         if (currentSettings?.titleTranslation) {
             pageVideosObserver();
             // Wait for the channel name element to be present before calling refreshMainChannelName
-            waitForElement('yt-dynamic-text-view-model h1.dynamic-text-view-model-wiz__h1 > span.yt-core-attributed-string')
+            waitForElement('h1.dynamicTextViewModelH1')
                 .then(() => {
                     refreshMainChannelName();
                 })
                 .catch((err) => {
                     titlesErrorLog("Timeout waiting for channel name element:", err);
+                    refreshMainChannelName();
                 });
         }
         if (currentSettings?.descriptionTranslation) {

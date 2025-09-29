@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fix
+- Updated channel name selector to support the latest YouTube channel page layout (new h1.dynamicTextViewModelH1 structure).
+
 ## [2.15.0] - 2025-09-26
 
 ### Feat

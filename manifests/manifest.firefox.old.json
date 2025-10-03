@@ -1,0 +1,76 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube No Translation",
+  "icons": {
+    "48": "dist/assets/icons/icon_48.png",
+    "96": "dist/assets/icons/icon_96.png"
+  },
+
+  "action": {
+    "default_icon": {
+      "48": "dist/assets/icons/icon_48.png",
+      "96": "dist/assets/icons/icon_96.png"
+    },
+    "default_popup": "dist/popup/popup.html",
+    "default_title": "YNT"
+  },
+
+  "permissions": [
+    "storage"
+  ],
+
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://*.youtube-nocookie.com/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*",
+        "*://*.youtube-nocookie.com/*"
+      ],
+      "js": ["dist/browser-polyfill.js", "dist/content/content.js"]
+    }
+  ],
+
+  "background": {
+    "scripts": ["dist/browser-polyfill.js", "dist/background/background.js"],
+    "type": "module"
+  },
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{9a3104a2-02c2-464c-b069-82344e5ed4ec}",
+      "strict_min_version": "112.0"
+    }
+  },
+  
+  "web_accessible_resources": [{
+    "resources": [
+      "dist/content/scripts/audioScript.js",
+      "dist/content/scripts/MainDescriptionScript.js",
+      "dist/content/scripts/subtitlesScript.js",
+      "dist/content/scripts/mainTitleScript.js",
+      "dist/content/scripts/channelNameScript.js",
+      "dist/content/scripts/timestampScript.js",
+      "dist/content/scripts/searchDescriptionInnerTube.js",
+      "dist/content/scripts/TitlesInnerTube.js",
+      "dist/content/scripts/getChannelIdScript.js",
+      "dist/content/scripts/ChannelNameInnerTubeScript.js",
+      "dist/content/scripts/ChannelDescriptionInnerTube.js",
+      "dist/content/scripts/getIdFromMiniPlayer.js",
+      "dist/content/toast.html",
+      "dist/assets/icons/*"
+    ],
+    "matches": [
+      "*://*.youtube.com/*",
+      "*://*.youtube-nocookie.com/*"
+    ]
+  }],
+
+  "options_ui": {
+    "page": "dist/popup/settings.html",
+    "open_in_tab": true
+  }
+}

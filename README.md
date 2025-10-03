@@ -99,6 +99,16 @@ If you want to use the [DeArrow](https://github.com/ajayyy/DeArrow) extension al
   # Then build and run in Xcode to generate the .app
   ```
 
+  ---
+
+  ### ⚠️ Firefox versions older than 128
+
+  If you use Firefox **older than version 128**, you must build the extension with a compatible manifest (without the `data_collection_permissions` field), use this command to do so :
+
+  ```bash
+  npm run package:firefox-old
+  ```
+
 
 ###
 

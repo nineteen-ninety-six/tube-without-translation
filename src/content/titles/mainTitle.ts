@@ -27,6 +27,8 @@ let pageTitleDebounceTimer: number | null = null;
 const PAGE_TITLE_DEBOUNCE_MS = 200;
 let mainTitleContentDebounceTimer: number | null = null;
 const MAIN_TITLE_CONTENT_DEBOUNCE_MS = 200;
+let embedTitleContentDebounceTimer: number | null = null;
+const EMBED_TITLE_CONTENT_DEBOUNCE_MS = 200;
 
 
 // --- Utility Functions
@@ -69,6 +71,10 @@ export function cleanupEmbedTitleContentObserver(): void {
         //mainTitleLog('Cleaning up embed title content observer');
         embedTitleContentObserver.disconnect();
         embedTitleContentObserver = null;
+    }
+    if (embedTitleContentDebounceTimer !== null) {
+        clearTimeout(embedTitleContentDebounceTimer);
+        embedTitleContentDebounceTimer = null;
     }
 }
 
@@ -203,15 +209,20 @@ function updateEmbedTitleElement(element: HTMLElement, title: string, videoId: s
     
     // Block YouTube from changing the embed title back
     embedTitleContentObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                const currentText = element.textContent;
-                if (normalizeText(currentText) !== normalizeText(title)) {
-                    mainTitleLog('YouTube changed embed title, reverting');
-                    element.innerText = title;
-                }
+        // Clear existing debounce timer
+        if (embedTitleContentDebounceTimer !== null) {
+            clearTimeout(embedTitleContentDebounceTimer);
+        }
+
+        // Set new debounce timer
+        embedTitleContentDebounceTimer = window.setTimeout(() => {
+            const currentText = element.textContent;
+            if (normalizeText(currentText) !== normalizeText(title)) {
+                mainTitleLog('YouTube changed embed title, reverting');
+                element.innerText = title;
             }
-        });
+            embedTitleContentDebounceTimer = null;
+        }, EMBED_TITLE_CONTENT_DEBOUNCE_MS);
     });
 
     embedTitleContentObserver.observe(element, {

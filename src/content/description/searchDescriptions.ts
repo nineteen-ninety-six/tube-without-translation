@@ -15,14 +15,20 @@ import { descriptionCache } from './index';
 
 
 let searchDescriptionsObserver = new Map<HTMLElement, MutationObserver>();
-let lastSearchDescriptionsRefresh = 0;
-const SEARCH_DESCRIPTIONS_THROTTLE = 1000;
+let searchDescriptionsDebounceTimers = new Map<HTMLElement, number>();
+const SEARCH_DESCRIPTIONS_DEBOUNCE_MS = 200;
 
 function cleanupSearchDescriptionElement(element: HTMLElement): void {
     const observer = searchDescriptionsObserver.get(element);
     if (observer) {
         observer.disconnect();
         searchDescriptionsObserver.delete(element);
+    }
+    
+    const timer = searchDescriptionsDebounceTimers.get(element);
+    if (timer !== undefined) {
+        clearTimeout(timer);
+        searchDescriptionsDebounceTimers.delete(element);
     }
 }
 
@@ -31,7 +37,11 @@ export function cleanupAllSearchDescriptionsObservers(): void {
         observer.disconnect();
     });
     searchDescriptionsObserver.clear();
-    lastSearchDescriptionsRefresh = 0;
+    
+    searchDescriptionsDebounceTimers.forEach((timer) => {
+        clearTimeout(timer);
+    });
+    searchDescriptionsDebounceTimers.clear();
 }
 
 function extractVideoId(url: string): string | null {
@@ -177,20 +187,32 @@ export function updateSearchDescriptionElement(element: HTMLElement, description
     }
 
     const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'childList' || mutation.type === 'characterData') {
-                if (!element.hasAttribute('ynt-search')) {
-                    element.setAttribute('ynt-search', videoId);
+        // Clear existing debounce timer for this element
+        const existingTimer = searchDescriptionsDebounceTimers.get(element);
+        if (existingTimer !== undefined) {
+            clearTimeout(existingTimer);
+        }
+
+        // Set new debounce timer
+        const timer = window.setTimeout(() => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    if (!element.hasAttribute('ynt-search')) {
+                        element.setAttribute('ynt-search', videoId);
+                    }
+                    if (container && !container.hasAttribute('ynt-search')) {
+                        container.setAttribute('ynt-search', videoId);
+                        container.setAttribute('data-original-description', truncatedDescription);
+                    }
+                    if (!container && element.id === 'description-text') {
+                        element.textContent = truncatedDescription;
+                    }
                 }
-                if (container && !container.hasAttribute('ynt-search')) {
-                    container.setAttribute('ynt-search', videoId);
-                    container.setAttribute('data-original-description', truncatedDescription);
-                }
-                if (!container && element.id === 'description-text') {
-                    element.textContent = truncatedDescription;
-                }
-            }
-        });
+            });
+            searchDescriptionsDebounceTimers.delete(element);
+        }, SEARCH_DESCRIPTIONS_DEBOUNCE_MS);
+
+        searchDescriptionsDebounceTimers.set(element, timer);
     });
 
     observer.observe(element, { childList: true, characterData: true });

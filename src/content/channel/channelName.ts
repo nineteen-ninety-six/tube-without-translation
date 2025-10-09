@@ -12,11 +12,18 @@ import { normalizeText } from '../../utils/text';
 
 
 let channelNameContentObserver: MutationObserver | null = null;
+let channelNameDebounceTimer: number | null = null;
+const CHANNEL_NAME_DEBOUNCE_MS = 200;
 
 export function cleanupChannelNameContentObserver(): void {
     if (channelNameContentObserver) {
         channelNameContentObserver.disconnect();
         channelNameContentObserver = null;
+    }
+    
+    if (channelNameDebounceTimer !== null) {
+        clearTimeout(channelNameDebounceTimer);
+        channelNameDebounceTimer = null;
     }
 }
 
@@ -47,23 +54,32 @@ function updateChannelNameElement(element: HTMLElement, originalName: string): v
     
     // Setup observer to prevent YouTube from changing it back
     channelNameContentObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === 'childList' || 
-                (mutation.type === 'attributes' && mutation.attributeName === 'title')) {
-                
-                // Current text after potential YouTube change
-                const currentText = normalizeText(element.textContent);
-                
-                // If YouTube changed it back, reapply our original
-                if (currentText !== normalizeText(originalName) || 
-                    element.getAttribute('title') !== originalName) {
+        // Clear existing debounce timer
+        if (channelNameDebounceTimer !== null) {
+            clearTimeout(channelNameDebounceTimer);
+        }
+        
+        // Set new debounce timer
+        channelNameDebounceTimer = window.setTimeout(() => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList' || 
+                    (mutation.type === 'attributes' && mutation.attributeName === 'title')) {
                     
-                    channelNameLog('YouTube changed channel name, reverting to original');
-                    element.setAttribute('title', originalName);
-                    anchorElement.textContent = originalName;
+                    // Current text after potential YouTube change
+                    const currentText = normalizeText(element.textContent);
+                    
+                    // If YouTube changed it back, reapply our original
+                    if (currentText !== normalizeText(originalName) || 
+                        element.getAttribute('title') !== originalName) {
+                        
+                        channelNameLog('YouTube changed channel name, reverting to original');
+                        element.setAttribute('title', originalName);
+                        anchorElement.textContent = originalName;
+                    }
                 }
-            }
-        });
+            });
+            channelNameDebounceTimer = null;
+        }, CHANNEL_NAME_DEBOUNCE_MS);
     });
     
     // Watch for changes to the element

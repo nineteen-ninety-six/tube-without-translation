@@ -7,10 +7,18 @@
  * This program is distributed without any warranty; see the license for details.
  */
 
-import { chaptersLog, chaptersErrorLog } from '../../utils/logger';
+import { chaptersLog } from '../../utils/logger';
 import { normalizeText } from '../../utils/text';
 
-import { cachedChapters, findChapterByTime, timeStringToSeconds } from './chaptersIndex';
+import { 
+    cachedChapters, 
+    findChapterByTime, 
+    timeStringToSeconds, 
+    setPanelsObserver, 
+    setPanelsDebounceTimer, 
+    getPanelsDebounceTimer,
+    PANELS_DEBOUNCE_MS 
+} from './chaptersIndex';
 
 
 function isPanelOpen(panel: Element): boolean {
@@ -41,7 +49,9 @@ export function setupPanelsObserver(): void {
 
     let lastPanelState: boolean | null = null;
 
-    const panelsObserver = new MutationObserver((mutations) => {
+    const observer = new MutationObserver((mutations) => {
+        let shouldUpdate = false;
+        
         mutations.forEach((mutation) => {
             if (mutation.type === 'attributes') {
                 const target = mutation.target as Element;
@@ -57,7 +67,7 @@ export function setupPanelsObserver(): void {
                             chaptersLog(`Panel chapters ${isOpen ? 'opened' : 'closed'}`);
                             
                             if (isOpen) {
-                                replaceChapterTitlesInPanels();
+                                shouldUpdate = true;
                             }
                         }
                     }
@@ -75,16 +85,34 @@ export function setupPanelsObserver(): void {
                             
                             const openChaptersPanel = document.querySelector('ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-macro-markers-description-chapters"][visibility="ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"]');
                             if (openChaptersPanel && openChaptersPanel.contains(element)) {
-                                replaceChapterTitlesInPanels();
+                                shouldUpdate = true;
                             }
                         }
                     }
                 });
             }
         });
+        
+        if (shouldUpdate) {
+            // Clear existing debounce timer
+            const currentTimer = getPanelsDebounceTimer();
+            if (currentTimer !== null) {
+                clearTimeout(currentTimer);
+            }
+            
+            // Set new debounce timer
+            const newTimer = window.setTimeout(() => {
+                replaceChapterTitlesInPanels();
+                setPanelsDebounceTimer(null);
+            }, PANELS_DEBOUNCE_MS);
+            
+            setPanelsDebounceTimer(newTimer);
+        }
     });
 
-    panelsObserver.observe(panelsContainer, {
+    setPanelsObserver(observer);
+    
+    observer.observe(panelsContainer, {
         childList: true,
         subtree: true,
         attributes: true,

@@ -17,6 +17,8 @@ import { titleCache } from "./index";
 
 // Observer and refresh logic for notification popup titles
 let notificationMutationObserver: MutationObserver | null = null;
+let notificationDebounceTimer: number | null = null;
+const NOTIFICATION_DEBOUNCE_MS = 200;
 
 export function setupNotificationTitlesObserver(): void {
     // Clean up any existing observer
@@ -34,7 +36,16 @@ export function setupNotificationTitlesObserver(): void {
     if (!contentWrapper) return;
 
     notificationMutationObserver = new MutationObserver(() => {
-        refreshNotificationTitles();
+        // Clear existing debounce timer
+        if (notificationDebounceTimer !== null) {
+            clearTimeout(notificationDebounceTimer);
+        }
+
+        // Set new debounce timer
+        notificationDebounceTimer = window.setTimeout(() => {
+            refreshNotificationTitles();
+            notificationDebounceTimer = null;
+        }, NOTIFICATION_DEBOUNCE_MS);
     });
 
     notificationMutationObserver.observe(contentWrapper, {
@@ -47,6 +58,11 @@ export function cleanupNotificationTitlesObserver(): void {
     if (notificationMutationObserver) {
         notificationMutationObserver.disconnect();
         notificationMutationObserver = null;
+    }
+    
+    if (notificationDebounceTimer !== null) {
+        clearTimeout(notificationDebounceTimer);
+        notificationDebounceTimer = null;
     }
 }
 

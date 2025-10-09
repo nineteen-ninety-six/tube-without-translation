@@ -13,6 +13,8 @@ import { normalizeText } from '../../utils/text';
 import { cachedChapters, findChapterByTime, getCurrentVideoTime } from './chaptersIndex';
 
 let sponsorChapterObserver: MutationObserver | null = null;
+let sponsorChapterDebounceTimer: number | null = null;
+const SPONSOR_CHAPTER_DEBOUNCE_MS = 200;
 
 // Update chapter button with original title
 export function updateChapterButton(): void {
@@ -37,10 +39,14 @@ export function updateChapterButton(): void {
     // SponsorBlock compatibility: force original title using MutationObserver
     const sponsorChapterText = document.querySelector('.ytp-chapter-title .sponsorChapterText') as HTMLElement;
 
-    // Disconnect previous observer if any
+    // Disconnect previous observer and clear timer if any
     if (sponsorChapterObserver) {
         sponsorChapterObserver.disconnect();
         sponsorChapterObserver = null;
+    }
+    if (sponsorChapterDebounceTimer !== null) {
+        clearTimeout(sponsorChapterDebounceTimer);
+        sponsorChapterDebounceTimer = null;
     }
 
     if (sponsorChapterText && targetChapter) {
@@ -49,10 +55,19 @@ export function updateChapterButton(): void {
 
         // Create a MutationObserver to keep the text original
         sponsorChapterObserver = new MutationObserver(() => {
-            if (sponsorChapterText.textContent !== targetChapter.title) {
-                chaptersLog(`SponsorBlock chapter text forcibly updated: Time ${currentTime}s -> "${targetChapter.title}"`);
-                sponsorChapterText.textContent = targetChapter.title;
+            // Clear existing debounce timer
+            if (sponsorChapterDebounceTimer !== null) {
+                clearTimeout(sponsorChapterDebounceTimer);
             }
+
+            // Set new debounce timer
+            sponsorChapterDebounceTimer = window.setTimeout(() => {
+                if (sponsorChapterText.textContent !== targetChapter.title) {
+                    chaptersLog(`SponsorBlock chapter text forcibly updated: Time ${currentTime}s -> "${targetChapter.title}"`);
+                    sponsorChapterText.textContent = targetChapter.title;
+                }
+                sponsorChapterDebounceTimer = null;
+            }, SPONSOR_CHAPTER_DEBOUNCE_MS);
         });
 
         sponsorChapterObserver.observe(sponsorChapterText, { childList: true, subtree: true, characterData: true });

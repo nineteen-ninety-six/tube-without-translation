@@ -20,6 +20,28 @@ let chapterButtonObserver: MutationObserver | null = null;
 let chaptersObserver: MutationObserver | null = null;
 let panelsObserver: MutationObserver | null = null;
 let chaptersUpdateInterval: number | null = null;
+
+let chapterButtonDebounceTimer: number | null = null;
+let chaptersDebounceTimer: number | null = null;
+let panelsDebounceTimer: number | null = null;
+
+const CHAPTER_BUTTON_DEBOUNCE_MS = 200;
+const CHAPTERS_DEBOUNCE_MS = 16; // ~60fps
+export const PANELS_DEBOUNCE_MS = 200;
+
+// Setters for panels observer and timer (used in pannel.ts)
+export function setPanelsObserver(observer: MutationObserver | null): void {
+    panelsObserver = observer;
+}
+
+export function setPanelsDebounceTimer(timer: number | null): void {
+    panelsDebounceTimer = timer;
+}
+
+export function getPanelsDebounceTimer(): number | null {
+    return panelsDebounceTimer;
+}
+
 export let cachedChapters: Chapter[] = [];
 let lastDescriptionHash: string = '';
 
@@ -43,6 +65,21 @@ export function cleanupChaptersObserver(): void {
     if (chaptersUpdateInterval) {
         clearInterval(chaptersUpdateInterval);
         chaptersUpdateInterval = null;
+    }
+    
+    if (chapterButtonDebounceTimer !== null) {
+        clearTimeout(chapterButtonDebounceTimer);
+        chapterButtonDebounceTimer = null;
+    }
+    
+    if (chaptersDebounceTimer !== null) {
+        clearTimeout(chaptersDebounceTimer);
+        chaptersDebounceTimer = null;
+    }
+    
+    if (panelsDebounceTimer !== null) {
+        clearTimeout(panelsDebounceTimer);
+        panelsDebounceTimer = null;
     }
     
     // Remove CSS style
@@ -226,8 +263,16 @@ export function initializeChaptersReplacement(originalDescription: string): void
         });
         
         if (shouldUpdate) {
-            // Debounce updates
-            setTimeout(updateTooltipChapter, 16); // ~60fps instead of immediate
+            // Clear existing debounce timer
+            if (chaptersDebounceTimer !== null) {
+                clearTimeout(chaptersDebounceTimer);
+            }
+            
+            // Set new debounce timer
+            chaptersDebounceTimer = window.setTimeout(() => {
+                updateTooltipChapter();
+                chaptersDebounceTimer = null;
+            }, CHAPTERS_DEBOUNCE_MS);
         }
     });
     
@@ -273,7 +318,16 @@ function setupChapterButtonObserver(): void {
         });
         
         if (shouldUpdate) {
-            setTimeout(updateChapterButton, 150);
+            // Clear existing debounce timer
+            if (chapterButtonDebounceTimer !== null) {
+                clearTimeout(chapterButtonDebounceTimer);
+            }
+            
+            // Set new debounce timer
+            chapterButtonDebounceTimer = window.setTimeout(() => {
+                updateChapterButton();
+                chapterButtonDebounceTimer = null;
+            }, CHAPTER_BUTTON_DEBOUNCE_MS);
         }
     });
     

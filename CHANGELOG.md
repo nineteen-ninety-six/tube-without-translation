@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fix
+- Added debounce timers to mutation observers that didn't have them yet (titles, descriptions, chapters, channel info) to prevent infinite loops and improve performance stability when conflicting with other extensions or rapid DOM changes.
+
 ## [2.15.1] - 2025-10-03
 
 ### Fix

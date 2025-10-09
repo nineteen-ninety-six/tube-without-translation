@@ -265,6 +265,8 @@ export async function refreshChannelShortDescription(): Promise<void> {
 
 
 let currentModalObserver: MutationObserver | null = null;
+let modalObserverDebounceTimer: number | null = null;
+const MODAL_OBSERVER_DEBOUNCE_MS = 50;
 
 /**
  * Cleans up the channel description modal observer if it exists.
@@ -274,6 +276,11 @@ export function cleanupChannelDescriptionModalObserver(): void {
         currentModalObserver.disconnect();
         currentModalObserver = null;
         descriptionLog("Channel description modal observer cleaned up.");
+    }
+    
+    if (modalObserverDebounceTimer !== null) {
+        clearTimeout(modalObserverDebounceTimer);
+        modalObserverDebounceTimer = null;
     }
 }
 
@@ -289,6 +296,8 @@ function observeChannelDescriptionModal(originalDescription: string): MutationOb
     }
 
     const observer = new MutationObserver((mutations) => {
+        let shouldUpdate = false;
+        
         for (const mutation of mutations) {
             for (const node of mutation.addedNodes) {
                 if (
@@ -296,12 +305,24 @@ function observeChannelDescriptionModal(originalDescription: string): MutationOb
                     (node as HTMLElement).querySelector &&
                     (node as HTMLElement).querySelector('yt-attributed-string#description-container')
                 ) {
-                    const descriptionContainer = (node as HTMLElement).querySelector('yt-attributed-string#description-container') as HTMLElement;
-                    if (descriptionContainer) {
-                        refreshChannelFullDescription(originalDescription);
-                    }
+                    shouldUpdate = true;
+                    break;
                 }
             }
+            if (shouldUpdate) break;
+        }
+        
+        if (shouldUpdate) {
+            // Clear existing debounce timer
+            if (modalObserverDebounceTimer !== null) {
+                clearTimeout(modalObserverDebounceTimer);
+            }
+            
+            // Set new debounce timer
+            modalObserverDebounceTimer = window.setTimeout(() => {
+                refreshChannelFullDescription(originalDescription);
+                modalObserverDebounceTimer = null;
+            }, MODAL_OBSERVER_DEBOUNCE_MS);
         }
     });
 

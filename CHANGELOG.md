@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.15.2] - 2025-10-09
+
 ### Fix
 - Added debounce timers to mutation observers that didn't have them yet (titles, descriptions, chapters, channel info) to prevent infinite loops and improve performance stability when conflicting with other extensions or rapid DOM changes.
 
@@ -495,7 +497,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *Note: This changelog was introduced in version 2.2.30. For earlier version history, please refer to the [GitHub releases](https://github.com/YouG-o/YouTube_No_Translation/releases).*
 
-[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.1...HEAD
+[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.2...HEAD
+[2.15.2]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.1...v2.15.2
 [2.15.1]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.0...v2.15.1
 [2.15.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.2...v2.15.0
 [2.14.2]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.1...v2.14.2

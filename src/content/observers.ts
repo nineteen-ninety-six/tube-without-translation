@@ -273,8 +273,6 @@ async function pageVideosObserver() {
 
     const allGrids = Array.from(document.querySelectorAll('#contents.ytd-rich-grid-renderer')) as HTMLElement[];
     allGrids.forEach(grid => {
-        refreshBrowsingVideos();
-        refreshShortsAlternativeFormat();
         const observer = new MutationObserver(() => handleGridMutationDebounced(pageName));
         observer.observe(grid, {
             childList: true,
@@ -301,12 +299,18 @@ function handleGridMutationDebounced(pageName: string) {
     }
     pageVideosDebounceTimer = window.setTimeout(() => {
         coreLog(`${pageName} page mutation detected.`);
-        refreshBrowsingVideos();
         refreshShortsAlternativeFormat();
-        setTimeout(() => {
-            refreshBrowsingVideos();
-            refreshShortsAlternativeFormat();
-        }, 650);
+        refreshBrowsingVideos();
+        refreshBrowsingVideos().then(() => {
+            setTimeout(() => {
+                refreshBrowsingVideos();
+                refreshShortsAlternativeFormat();
+            }, 500);
+            setTimeout(() => {
+                refreshBrowsingVideos();
+                refreshShortsAlternativeFormat();
+            }, 1000);
+        });
         pageVideosDebounceTimer = null;
     }, OBSERVERS_DEBOUNCE_MS);
 }

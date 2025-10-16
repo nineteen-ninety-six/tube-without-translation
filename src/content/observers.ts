@@ -33,6 +33,7 @@ import { refreshChannelPlayer } from './channel/channelPlayer';
 import { processChannelVideoDescriptions } from './channel/ChannelVideoDescriptions';
 import { refreshInfoCardsTitles, cleanupInfoCards } from './titles/infoCards';
 import { setupInfoCardTeasersObserver, cleanupInfoCardTeasersObserver } from  './titles/infoCardsTeasers';
+import { cleanupThumbnailObservers } from './Thumbnails/browsingThumbnails';
 
 // MAIN OBSERVERS -----------------------------------------------------------
 let videoPlayerListener: ((e: Event) => void) | null = null;
@@ -677,6 +678,8 @@ function observersCleanup() {
 
     cleanupInfoCards();
     cleanupInfoCardTeasersObserver();
+    
+    cleanupThumbnailObservers();
 }
 
 function handleUrlChange() {

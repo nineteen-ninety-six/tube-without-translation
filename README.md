@@ -97,6 +97,7 @@ If you want to use the [DeArrow](https://github.com/ajayyy/DeArrow) extension al
   npm run prepare:safari
   open "safari-extension/YouTube No Translation/YouTube No Translation.xcodeproj"
   # Then build and run in Xcode to generate the .app
+  # Make sure you have allowed usigned extension in Safari settings
   ```
 
   ---

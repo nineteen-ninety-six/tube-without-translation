@@ -7,11 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+
+## [2.16.0] - 2025-10-16
+
 ### Feat
 - **InfoCards Support**: Original titles are now restored for video annotations (infocards) in video descriptions and their corresponding overlay teasers
 
 ### Fix
 - Fixed missing observer initialization after full page reload by manually calling `handleUrlChange()` in `setupUrlObserver`. This ensures all observers and features are correctly set up whether the user navigates via SPA or refreshes the browser.
+- Thumbnail Lazy Loading Support: Added passive observation system for lazy-loaded thumbnails. Loaded video with thumbnails ouside of viewport were not processed.
+
+### Performances
+- Removed redundant call to browsing videos refresher in observers.
 
 ## [2.15.2] - 2025-10-09
 
@@ -503,7 +511,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *Note: This changelog was introduced in version 2.2.30. For earlier version history, please refer to the [GitHub releases](https://github.com/YouG-o/YouTube_No_Translation/releases).*
 
-[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.2...HEAD
+[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.16.0...HEAD
+[2.16.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.2...v2.16.0
 [2.15.2]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.1...v2.15.2
 [2.15.1]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.0...v2.15.1
 [2.15.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.14.2...v2.15.0

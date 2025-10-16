@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Feat
 - **InfoCards Support**: Original titles are now restored for video annotations (infocards) in video descriptions and their corresponding overlay teasers
 
+### Fix
+- Fixed missing observer initialization after full page reload by manually calling `handleUrlChange()` in `setupUrlObserver`. This ensures all observers and features are correctly set up whether the user navigates via SPA or refreshes the browser.
+
 ## [2.15.2] - 2025-10-09
 
 ### Fix

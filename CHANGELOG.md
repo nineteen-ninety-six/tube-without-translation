@@ -7,11 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.17.0] - 2025-10-17
+
 ### Fix
 - **Chapters fixes**:
   - Check chapters translation even when description is original.
   
 - Improved video processing to ensure descriptions and chapters are only applied when both DOM and URL video IDs match, preventing race conditions during SPA navigation that could cause content from one video to be applied to another.
+
+### Changed
+- Updated application logo.
 
 ## [2.16.0] - 2025-10-16
 
@@ -515,7 +520,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *Note: This changelog was introduced in version 2.2.30. For earlier version history, please refer to the [GitHub releases](https://github.com/YouG-o/YouTube_No_Translation/releases).*
 
-[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.16.0...HEAD
+[Unreleased]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.17.0...HEAD
+[2.17.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.16.0...v2.17.0
 [2.16.0]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.2...v2.16.0
 [2.15.2]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.1...v2.15.2
 [2.15.1]: https://github.com/YouG-o/YouTube_No_Translation/compare/v2.15.0...v2.15.1

@@ -11,6 +11,7 @@ import { ExtensionSettings, Message, ToggleConfig } from "../types/types";
 import { DEFAULT_SETTINGS } from "../config/constants";
 import { sanitizeSettings } from "../utils/settings";
 import { coreLog, coreErrorLog } from "../utils/logger";
+import { isSafari } from "../utils/utils";
 
 
 const titleToggle = document.getElementById('titleTranslation') as HTMLInputElement;
@@ -489,29 +490,34 @@ clearCacheBtn.addEventListener('click', async () => {
 if (isWelcome) {
     const reloadBtn = document.getElementById('reloadYoutubeTabsBtn') as HTMLButtonElement | null;
     if (reloadBtn) {
-        reloadBtn.onclick = async () => {
-            try {
-                const tabs = await browser.tabs.query({
-                    url: [
-                        "*://*.youtube.com/*",
-                        "*://*.youtube-nocookie.com/*"
-                    ]
-                });
-                let count = 0;
-                for (const tab of tabs) {
-                    // Only reload tabs that are not discarded
-                    if (tab.id && tab.discarded === false) {
-                        await browser.tabs.reload(tab.id);
-                        count++;
+        // Hide button on Safari (tabs.reload is not reliable)
+        if (isSafari()) {
+            reloadBtn.style.display = 'none';
+        } else {
+            reloadBtn.onclick = async () => {
+                try {
+                    const tabs = await browser.tabs.query({
+                        url: [
+                            "*://*.youtube.com/*",
+                            "*://*.youtube-nocookie.com/*"
+                        ]
+                    });
+                    let count = 0;
+                    for (const tab of tabs) {
+                        // Only reload tabs that are not discarded
+                        if (tab.id && tab.discarded === false) {
+                            await browser.tabs.reload(tab.id);
+                            count++;
+                        }
                     }
+                    reloadBtn.textContent = `Reloaded ${count} active tab${count !== 1 ? 's' : ''}!`;
+                    reloadBtn.disabled = true;
+                } catch (error) {
+                    reloadBtn.textContent = "Error reloading tabs";
+                    reloadBtn.disabled = true;
+                    coreErrorLog("Failed to reload YouTube tabs:", error);
                 }
-                reloadBtn.textContent = `Reloaded ${count} active tab${count !== 1 ? 's' : ''}!`;
-                reloadBtn.disabled = true;
-            } catch (error) {
-                reloadBtn.textContent = "Error reloading tabs";
-                reloadBtn.disabled = true;
-                coreErrorLog("Failed to reload YouTube tabs:", error);
-            }
-        };
+            };
+        }
     }
 }

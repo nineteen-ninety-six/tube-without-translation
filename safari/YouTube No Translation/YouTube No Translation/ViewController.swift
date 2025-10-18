@@ -13,7 +13,7 @@ import Cocoa
 import SafariServices
 import WebKit
 
-let extensionBundleIdentifier = "com.Seva41.YouTube-No-Translation.Extension"
+let extensionBundleIdentifier = "com.YouGo.YouTube-No-Translation.Extension"
 
 class ViewController: NSViewController, WKNavigationDelegate, WKScriptMessageHandler {
 

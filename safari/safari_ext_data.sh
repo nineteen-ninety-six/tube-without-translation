@@ -163,6 +163,20 @@ EOF
 echo "LargeIcon.imageset created."
 
 # --- Reorganize Safari extension files ---
+echo "Reorganizing files inside Safari extension..."
+
+# Clean dist directory for fresh reorganization
+rm -rf "$DIST_DIR"
+mkdir -p "$DIST_DIR"
+
+cd "$DIST_DIR" || {
+  echo "Could not access directory: $DIST_DIR"
+  exit 1
+}
+
+mkdir -p content background popup
+
+# --- Reorganize Safari extension files ---
 cd "$DIST_DIR" || {
   echo "Could not access directory: $DIST_DIR"
   exit 1

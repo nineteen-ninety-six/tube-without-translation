@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6AB4C9D12EA38F0800D882D6 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6AB4C9D02EA38F0800D882D6 /* icon.png */; };
 		C62FBAC92DE94D2B009AD7D3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62FBAC82DE94D2B009AD7D3 /* AppDelegate.swift */; };
 		C62FBACD2DE94D2B009AD7D3 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = C62FBACB2DE94D2B009AD7D3 /* Main.html */; };
-		C62FBACF2DE94D2B009AD7D3 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C62FBACE2DE94D2B009AD7D3 /* Icon.png */; };
 		C62FBAD12DE94D2B009AD7D3 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = C62FBAD02DE94D2B009AD7D3 /* Style.css */; };
 		C62FBAD32DE94D2B009AD7D3 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = C62FBAD22DE94D2B009AD7D3 /* Script.js */; };
 		C62FBAD52DE94D2B009AD7D3 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62FBAD42DE94D2B009AD7D3 /* ViewController.swift */; };
@@ -72,10 +72,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6AB4C9D02EA38F0800D882D6 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = /Users/yougo/Documents/Code/YouTube_No_Translation/assets/icons/icon.png; sourceTree = "<absolute>"; };
 		C62FBAC52DE94D2B009AD7D3 /* YouTube No Translation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "YouTube No Translation.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C62FBAC82DE94D2B009AD7D3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C62FBACC2DE94D2B009AD7D3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
-		C62FBACE2DE94D2B009AD7D3 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		C62FBAD02DE94D2B009AD7D3 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
 		C62FBAD22DE94D2B009AD7D3 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
 		C62FBAD42DE94D2B009AD7D3 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -178,8 +178,8 @@
 		C62FBACA2DE94D2B009AD7D3 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6AB4C9D02EA38F0800D882D6 /* icon.png */,
 				C62FBACB2DE94D2B009AD7D3 /* Main.html */,
-				C62FBACE2DE94D2B009AD7D3 /* Icon.png */,
 				C62FBAD02DE94D2B009AD7D3 /* Style.css */,
 				C62FBAD22DE94D2B009AD7D3 /* Script.js */,
 			);
@@ -369,9 +369,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C62FBACF2DE94D2B009AD7D3 /* Icon.png in Resources */,
 				C62FBAD82DE94D2B009AD7D3 /* Main.storyboard in Resources */,
 				C62FBAD32DE94D2B009AD7D3 /* Script.js in Resources */,
+				6AB4C9D12EA38F0800D882D6 /* icon.png in Resources */,
 				C62FBACD2DE94D2B009AD7D3 /* Main.html in Resources */,
 				C62FBADA2DE94D2C009AD7D3 /* Assets.xcassets in Resources */,
 				C62FBAD12DE94D2B009AD7D3 /* Style.css in Resources */,

@@ -15,29 +15,17 @@
 
   ![Add-On icon](./assets/images/icon.png)
 
+
   ###
 
   # YouTube No Translation
 
   A web browser extension that keeps your YouTube experience authentic by preventing automatic translations.
-  The extension is available on Chromium browsers, Firefox and Safari.
-
-  <br>
-
-
-  [![Available on Mozilla](./assets/images/mozilla-firefox_banner.png)](https://addons.mozilla.org/firefox/addon/youtube-no-translation/)
-  [![Available on Chrome Web Store](./assets/images/chrome-web-store_banner.png)](https://chromewebstore.google.com/detail/youtube-no-translation/lmkeolibdeeglfglnncmfleojmakecjb)  
-  [![Available on Microsoft Store](./assets/images/microsoft-edge_banner.png)](https://microsoftedge.microsoft.com/addons/detail/dflkepcdbnjbbfdokanhhdeolodkcofb)
 
 
   <br>
-
-  You can get the Firefox and Chrome extensions on their official stores, but **for Safari you must [build it yourself](#build-it-yourself)**. I do not provide support for Safari.
 
 </div>
-
-
-###
 
 <div align="center">
 
@@ -54,6 +42,20 @@ You can enable YouTube Data API v3 (requires your own API key) for the most reli
 
 
 If you want to use the [DeArrow](https://github.com/ajayyy/DeArrow) extension alongside this one  [PLEASE CHECK THIS](./docs/DEARROW_SUPPORT.md) to avoid any conflicts.
+
+
+###
+
+<div align="center">
+
+  ## Download:
+
+
+  [![Available on Mozilla](./assets/images/mozilla-firefox_banner.png)](https://addons.mozilla.org/firefox/addon/youtube-no-translation/)
+  [![Available on Chrome Web Store](./assets/images/chrome-web-store_banner.png)](https://chromewebstore.google.com/detail/youtube-no-translation/lmkeolibdeeglfglnncmfleojmakecjb)  
+  [![Available on Microsoft Store](./assets/images/microsoft-edge_banner.png)](https://microsoftedge.microsoft.com/addons/detail/dflkepcdbnjbbfdokanhhdeolodkcofb) 
+
+</div>
 
 
 ###
@@ -117,6 +119,7 @@ If you want to use the [DeArrow](https://github.com/ajayyy/DeArrow) extension al
   
   # Contributors:
   
+</div>
 
   Contributions are welcome! Whether you want to fix bugs, add features, or improve documentation, your help is appreciated.
   Please read [CONTRIBUTING.md](CONTRIBUTING.md) to get started, or browse [existing issues](https://github.com/YouG-o/YouTube_No_Translation/issues) to see what needs help.
@@ -125,11 +128,12 @@ If you want to use the [DeArrow](https://github.com/ajayyy/DeArrow) extension al
 
   
   Thanks to all [contributors](./docs/CONTRIBUTORS_LIST.md) !
+  
   <br>
+
   ![Contributor](https://contrib.rocks/image?repo=YouG-o/YouTube_No_Translation)
 
   
-</div>
 
 ###
 

@@ -114,31 +114,91 @@ export function timeStringToSeconds(timeString: string): number {
 // Parse chapters from description text
 function parseChaptersFromDescription(description: string): Chapter[] {
     const chapters: Chapter[] = [];
-    // Regex: line must start with optional bullet/emoji, then timestamp, then optional separator, then title
-    const chapterRegex = /^\s*([\-\–—•·▪▫‣⁃→>]*\s*)?(\d{1,2}:\d{2}(?::\d{2})?)\s+(.+)$/;
-
-    description.split('\n').forEach(line => {
-        const match = line.trim().match(chapterRegex);
-        if (match) {
-            const [, , timestamp, title] = match;
-            // Convert timestamp to seconds
-            const parts = timestamp.split(':').map(Number);
-            let totalSeconds = 0;
-            if (parts.length === 2) {
-                totalSeconds = parts[0] * 60 + parts[1];
-            } else if (parts.length === 3) {
-                totalSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
-            }
-            // Clean title
-            let cleanTitle = title.trim();
-            // Skip if title is too short
-            if (cleanTitle.length < 2) return;
-            chapters.push({
-                startTime: totalSeconds,
-                title: cleanTitle
-            });
-        }
+    
+    // Regex to find timestamp (HH:MM:SS or MM:SS)
+    const timestampRegex = /(\d{1,2}:\d{2}(?::\d{2})?)/;
+    
+    const lines = description.split('\n');
+    
+    // First pass: identify which lines have timestamps
+    const linesWithTimestamps: boolean[] = lines.map(line => {
+        const trimmed = line.trim();
+        return trimmed.length > 0 && timestampRegex.test(trimmed);
     });
+    
+    // Second pass: parse chapters only if surrounded by other timestamp lines
+    lines.forEach((line, index) => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) return;
+        
+        // Find timestamp in the line
+        const timestampMatch = trimmedLine.match(timestampRegex);
+        if (!timestampMatch) return;
+        
+        // Check if there's another timestamp line before or after (skipping empty lines)
+        let hasTimestampBefore = false;
+        let hasTimestampAfter = false;
+        
+        // Look for timestamp in previous non-empty lines
+        for (let i = index - 1; i >= 0; i--) {
+            if (lines[i].trim().length === 0) continue; // Skip empty lines
+            hasTimestampBefore = linesWithTimestamps[i];
+            break;
+        }
+        
+        // Look for timestamp in next non-empty lines
+        for (let i = index + 1; i < lines.length; i++) {
+            if (lines[i].trim().length === 0) continue; // Skip empty lines
+            hasTimestampAfter = linesWithTimestamps[i];
+            break;
+        }
+        
+        // Only accept if there's a timestamp before OR after
+        if (!hasTimestampBefore && !hasTimestampAfter) {
+            return; // Isolated timestamp, not a chapter
+        }
+        
+        const timestamp = timestampMatch[1];
+        const timestampIndex = timestampMatch.index!;
+        
+        // Convert timestamp to seconds
+        const parts = timestamp.split(':').map(Number);
+        let totalSeconds = 0;
+        if (parts.length === 2) {
+            totalSeconds = parts[0] * 60 + parts[1];
+        } else if (parts.length === 3) {
+            totalSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+        }
+        
+        // Extract title (everything except timestamp and separators)
+        let title = '';
+        
+        // Case 1: Timestamp at the beginning (00:00 Title or 00:00- Title)
+        if (timestampIndex === 0 || /^[\-\–—•·▪▫‣⁃→>\s]*$/.test(trimmedLine.substring(0, timestampIndex))) {
+            title = trimmedLine.substring(timestampIndex + timestamp.length);
+        }
+        // Case 2: Timestamp at the end (Title - 00:00 or Title 00:00)
+        else {
+            title = trimmedLine.substring(0, timestampIndex);
+        }
+        
+        // Clean title: remove leading/trailing separators and whitespace
+        title = title.replace(/^[\-\–—•·▪▫‣⁃→>\s]+/, '')
+                     .replace(/[\-\–—•·▪▫‣⁃→>\s]+$/, '')
+                     .trim();
+        
+        // Skip if title is too short
+        if (title.length < 2) return;
+        
+        chapters.push({
+            startTime: totalSeconds,
+            title: title
+        });
+    });
+    
+    // Sort chapters by start time
+    chapters.sort((a, b) => a.startTime - b.startTime);
+    
     return chapters;
 }
 

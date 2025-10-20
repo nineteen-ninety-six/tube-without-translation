@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fix
+- Improved chapter detection in video descriptions: timestamps at the end of lines are now recognized as valid chapters.
+- Isolated timestamps (not surrounded by at least an other chapter lines) are no longer considered chapters, reducing false positives in descriptions with time mentions.
+
 ## [2.17.0] - 2025-10-17
 
 ### Fix

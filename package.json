@@ -1,7 +1,7 @@
 {
   "name": "ynt",
   "version": "2.17.1",
-  "description": "Keep YouTube content in its original language: titles, descriptions, audio tracks, subtitles... No more unwanted translations.",
+  "description": "Keep YouTube content in its original language: titles, descriptions, audio... No more unwanted translations.",
   "scripts": {
     "clean": "rm -rf dist && rm -f manifest.json",
     "create-dirs": "mkdir -p dist/popup dist/content dist/background dist/styles dist/assets/icons",

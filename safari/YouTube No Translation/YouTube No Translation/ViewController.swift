@@ -26,7 +26,13 @@ class ViewController: NSViewController, WKNavigationDelegate, WKScriptMessageHan
 
         self.webView.configuration.userContentController.add(self, name: "controller")
 
-        self.webView.loadFileURL(Bundle.main.url(forResource: "Main", withExtension: "html")!, allowingReadAccessTo: Bundle.main.resourceURL!)
+        // Load Main.html from Base.lproj directory
+        guard let mainURL = Bundle.main.url(forResource: "Main", withExtension: "html", subdirectory: "Base.lproj"),
+              let resourceURL = Bundle.main.resourceURL else {
+            fatalError("Failed to load Main.html from bundle")
+        }
+        
+        self.webView.loadFileURL(mainURL, allowingReadAccessTo: resourceURL)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
@@ -47,15 +53,38 @@ class ViewController: NSViewController, WKNavigationDelegate, WKScriptMessageHan
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if (message.body as! String != "open-preferences") {
-            return;
+        guard let messageBody = message.body as? String else {
+            return
         }
-
-        SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
-            DispatchQueue.main.async {
-                NSApplication.shared.terminate(nil)
+        
+        if messageBody == "open-preferences" {
+            SFSafariApplication.showPreferencesForExtension(withIdentifier: extensionBundleIdentifier) { error in
+                DispatchQueue.main.async {
+                    NSApplication.shared.terminate(nil)
+                }
             }
+        } else if messageBody == "get-app-icon" {
+            injectAppIcon()
         }
+    }
+    
+    func injectAppIcon() {
+        guard let appIcon = NSApp.applicationIconImage,
+              let tiffData = appIcon.tiffRepresentation,
+              let bitmapImage = NSBitmapImageRep(data: tiffData),
+              let pngData = bitmapImage.representation(using: .png, properties: [:]) else {
+            return
+        }
+        
+        let base64String = pngData.base64EncodedString()
+        let javascript = """
+            var img = document.getElementById('app-icon');
+            if (img) {
+                img.src = 'data:image/png;base64,\(base64String)';
+            }
+        """
+        
+        self.webView.evaluateJavaScript(javascript, completionHandler: nil)
     }
 
 }

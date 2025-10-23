@@ -39,7 +39,7 @@
     "post:build": "rimraf dist/config dist/types",
     "prepare:safari": "npm run build:safari && npm run copy:safari && npm run setup:safari",
     "copy:safari": "rm -rf safari/YouTube\\ No\\ Translation/YouTube\\ No\\ Translation/Resources/dist && cp -r dist safari/YouTube\\ No\\ Translation/YouTube\\ No\\ Translation/Resources/",
-    "setup:safari": "./safari/safari_ext_data.sh"
+    "setup:safari": "./scripts/prepare_safari_resources.sh"
   },
   "repository": {
     "type": "git",

@@ -4,13 +4,14 @@ set -e
 # --- Base variables ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$SCRIPT_DIR/.."
-DEST_DIR="$SCRIPT_DIR"
 PROJECT_NAME="YouTube No Translation"
+SAFARI_DIR="$ROOT_DIR/safari/$PROJECT_NAME/$PROJECT_NAME"
 ICON_SRC="$ROOT_DIR/assets/images/icon_1024.png"
-APPICONSET="$DEST_DIR/$PROJECT_NAME/$PROJECT_NAME/Assets.xcassets/AppIcon.appiconset"
-ACCENTCOLOR="$DEST_DIR/$PROJECT_NAME/$PROJECT_NAME/Assets.xcassets/AccentColor.colorset"
-LARGEICON="$DEST_DIR/$PROJECT_NAME/$PROJECT_NAME/Assets.xcassets/LargeIcon.imageset"
-DIST_DIR="$DEST_DIR/$PROJECT_NAME/$PROJECT_NAME/Resources/dist"
+APPICONSET="$SAFARI_DIR/Assets.xcassets/AppIcon.appiconset"
+ACCENTCOLOR="$SAFARI_DIR/Assets.xcassets/AccentColor.colorset"
+LARGEICON="$SAFARI_DIR/Assets.xcassets/LargeIcon.imageset"
+DIST_DIR="$SAFARI_DIR/Resources/dist"
+
 
 # --- Initial validations ---
 if [ ! -f "$ICON_SRC" ]; then

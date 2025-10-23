@@ -12,6 +12,7 @@ import { DEFAULT_SETTINGS } from "../config/constants";
 import { sanitizeSettings } from "../utils/settings";
 import { coreLog, coreErrorLog } from "../utils/logger";
 import { isSafari } from "../utils/utils";
+import { displayExtensionVersion, displayExtensionName } from "../utils/display";
 
 
 const titleToggle = document.getElementById('titleTranslation') as HTMLInputElement;
@@ -23,7 +24,6 @@ const subtitlesToggle = document.getElementById('subtitlesTranslation') as HTMLI
 const subtitlesLanguageSelect = document.getElementById('subtitlesLanguage') as HTMLSelectElement;
 const asrSubtitlesToggle = document.getElementById('asrSubtitlesEnabled') as HTMLInputElement;
 const asrToggleContainer = document.getElementById('asrToggleContainer') as HTMLDivElement;
-const extensionVersionElement = document.getElementById('extensionVersion') as HTMLSpanElement;
 const youtubeDataApiToggle = document.getElementById('youtubeDataApiEnabled') as HTMLInputElement;
 const youtubeDataApiKeyInput = document.getElementById('youtubeDataApiKey') as HTMLInputElement;
 const youtubeApiKeyContainer = document.getElementById('youtubeApiKeyContainer') as HTMLDivElement;
@@ -33,14 +33,6 @@ const clearCacheBtn = document.getElementById('clearCacheBtn') as HTMLButtonElem
 const extraSettingsToggle = document.getElementById('extraSettingsToggle') as HTMLDivElement;
 const extraSettingsContent = document.getElementById('extraSettingsContent') as HTMLDivElement;
 const extraSettingsArrow = document.getElementById('extraSettingsArrow');
-
-// Function to display the extension version
-function displayExtensionVersion() {
-    if (extensionVersionElement) {
-        const manifest = browser.runtime.getManifest();
-        extensionVersionElement.textContent = manifest.version;
-    }
-}
 
 // Function to toggle extra settings section
 function toggleExtraSettings() {
@@ -71,6 +63,7 @@ function updateAsrToggleVisibility() {
 // Initialize toggle states from storage
 document.addEventListener('DOMContentLoaded', async () => {
     displayExtensionVersion();
+    displayExtensionName();
     try {
         const data = await browser.storage.local.get('settings');
         
@@ -168,7 +161,7 @@ if (isWelcome) {
         if (imgElement) {
             pageTitle.innerHTML = '';
             pageTitle.appendChild(imgElement);
-            pageTitle.appendChild(document.createTextNode('Welcome to YouTube No Translation!'));
+            pageTitle.appendChild(document.createTextNode(`Welcome to ${browser.runtime.getManifest().name} Settings`));
         }
     }
     
@@ -521,3 +514,21 @@ if (isWelcome) {
         }
     }
 }
+
+function setExtensionName() {
+    const manifest = browser.runtime.getManifest();
+    // Set all elements with id 'extensionName'
+    document.querySelectorAll('#extensionName').forEach(el => {
+        el.textContent = manifest.name;
+    });
+    // Set the <title>
+    const titleEl = document.getElementById('extensionTitle');
+    if (titleEl) {
+        titleEl.textContent = manifest.name;
+    } else {
+        // Fallback: set document.title directly if needed
+        document.title = manifest.name;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', setExtensionName);

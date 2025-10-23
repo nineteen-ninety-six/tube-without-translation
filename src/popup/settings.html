@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/main.css">
-    <title>YouTube No Translation!</title>
+    <title id="extensionTitle"></title>
 </head>
 
 <body class="flex flex-col items-center justify-center min-h-screen bg-gray-700">
@@ -14,7 +14,7 @@
         <header class="pb-4 border-b border-gray-600">
             <h1 class="text-2xl font-semibold text-white flex items-center gap-2" id="pageTitle">
                 <img src="../assets/icons/icon.png" alt="Logo" class="w-8 h-8">
-                YouTube No Translation Settings
+                <span id="extensionName"></span>
             </h1>
             <div class="mb-3 text-xs text-gray-400 flex items-center gap-1">
                 Created by YouGo
@@ -24,7 +24,7 @@
             </div>
             <div id="welcomeMessage" class="hidden">
                 <p class="text-base text-gray-300 mb-1">
-                    Thanks for installing! Here you can configure how the extension behaves.
+                    Thanks for installing <span id="extensionName"></span>! Here you can configure how the extension behaves.
                 </p>
                 <div id="reloadNotice"
                      class="flex flex-col items-center justify-center mt-3 mb-6 p-4 rounded-lg border-4 border-yellow-400 bg-yellow-100 text-yellow-900 shadow-lg"

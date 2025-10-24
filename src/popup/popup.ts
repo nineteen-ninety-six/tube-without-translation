@@ -161,7 +161,7 @@ if (isWelcome) {
         if (imgElement) {
             pageTitle.innerHTML = '';
             pageTitle.appendChild(imgElement);
-            pageTitle.appendChild(document.createTextNode(`Welcome to ${browser.runtime.getManifest().name} Settings`));
+            pageTitle.appendChild(document.createTextNode(`Welcome to ${browser.runtime.getManifest().name}`));
         }
     }
     
@@ -525,9 +525,6 @@ function setExtensionName() {
     const titleEl = document.getElementById('extensionTitle');
     if (titleEl) {
         titleEl.textContent = manifest.name;
-    } else {
-        // Fallback: set document.title directly if needed
-        document.title = manifest.name;
     }
 }
 

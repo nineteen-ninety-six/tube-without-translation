@@ -37,7 +37,8 @@
     "package:chromium": "npm run build:chromium && rm -rf build-tmp && mkdir build-tmp && cp -r dist build-tmp/ && cp LICENSE build-tmp/ && cp CHANGELOG.md build-tmp/ && cp manifest.json build-tmp/ && (cd build-tmp && web-ext build --overwrite-dest -a ../web-ext-artifacts/chromium --filename=chromium-ynt-${npm_package_version}.zip) && rm -rf build-tmp && npm run clean",
     "source:mozilla": "node scripts/package-for-mozilla-reviewers.js",
     "post:build": "rimraf dist/config dist/types",
-    "prepare:safari": "npm run build:safari && npm run copy:safari && npm run setup:safari",
+    "strip:safari": "node scripts/strip-donations-for-safari.js",
+    "prepare:safari": "npm run build:safari && npm run strip:safari && npm run copy:safari && npm run setup:safari",
     "copy:safari": "rm -rf safari/YouTube\\ No\\ Translation/YouTube\\ No\\ Translation/Resources/dist && cp -r dist safari/YouTube\\ No\\ Translation/YouTube\\ No\\ Translation/Resources/",
     "setup:safari": "./scripts/prepare_safari_resources.sh"
   },

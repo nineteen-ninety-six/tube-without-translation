@@ -11,7 +11,7 @@ import { ExtensionSettings, Message, ToggleConfig } from "../types/types";
 import { DEFAULT_SETTINGS } from "../config/constants";
 import { sanitizeSettings } from "../utils/settings";
 import { coreLog, coreErrorLog } from "../utils/logger";
-import { isSafari } from "../utils/utils";
+import { isSafari } from "../utils/browser";
 import { displayExtensionVersion, displayExtensionName } from "../utils/display";
 
 

@@ -1,9 +1,15 @@
 import { ExtensionSettings } from '../../types/types';
+import { isFirefox, isEdge, isChromium } from '../../utils/browser';
 
 const TOAST_ID = 'ynt-support-toast';
 const REMIND_DELAY = 30;
 const INITIAL_DELAY = 7;
 let toastStorageListener: ((changes: any, area: string) => void) | null = null;
+
+// Store URLs
+const FIREFOX_REVIEW_URL = 'https://addons.mozilla.org/firefox/addon/youtube-no-translation/reviews/';
+const CHROME_REVIEW_URL = 'https://chromewebstore.google.com/detail/youtube-no-translation/lmkeolibdeeglfglnncmfleojmakecjb/reviews';
+const EDGE_REVIEW_URL = 'https://microsoftedge.microsoft.com/addons/detail/youtube-no-translation/dflkepcdbnjbbfdokanhhdeolodkcofb';
 
 function daysBetween(date1: string, date2: string): number {
     return Math.floor((new Date(date2).getTime() - new Date(date1).getTime()) / (1000 * 60 * 60 * 24));
@@ -18,8 +24,33 @@ async function setSettings(settings: ExtensionSettings) {
     await browser.storage.local.set({ settings });
 }
 
+function getReviewUrl(): string | null {
+    if (isFirefox()) {
+        return FIREFOX_REVIEW_URL;
+    } else if (isEdge()) {
+        return EDGE_REVIEW_URL;
+    } else if (isChromium()) {
+        return CHROME_REVIEW_URL;
+    }
+    return null;
+}
+
+function getStoreName(): string | null {
+    if (isFirefox()) {
+        return 'Mozilla Add-ons';
+    } else if (isEdge()) {
+        return 'Microsoft Store';
+    } else if (isChromium()) {
+        return 'Chrome Web Store';
+    }
+    return null;
+}
+
 function injectToast() {
     if (document.getElementById(TOAST_ID)) return;
+
+    const reviewUrl = getReviewUrl();
+    const storeName = getStoreName();
 
     fetch(browser.runtime.getURL('dist/content/toast.html'))
         .then(res => {
@@ -59,10 +90,20 @@ function injectToast() {
                 koFiImg.src = browser.runtime.getURL('dist/assets/icons/ko-fi.png');
             }
 
+            // Inject review link section if supported browser
+            if (reviewUrl && storeName) {
+                const koFiContainer = document.querySelector('#ynt-support-toast > div:nth-child(4)'); // Ko-fi button container
+                if (koFiContainer) {
+                    const reviewSection = document.createElement('div');
+                    reviewSection.style.cssText = 'font-size: 0.85em; text-align: center; color: #d1d5db; width: 100%;';
+                    reviewSection.innerHTML = `Can't afford a tip? You can still support me by leaving a 5-star review on <a href="${reviewUrl}" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none; font-weight: 500;">${storeName}</a>!`;
+                    koFiContainer.insertAdjacentElement('afterend', reviewSection);
+                }
+            }
+
             // Add listeners
             const supportBtn = document.getElementById('ynt-ko-fi-btn');
             const remindBtn = document.getElementById('ynt-remind-btn');
-            const dismissBtn = document.getElementById('ynt-dismiss-btn');
 
             supportBtn?.addEventListener('click', () => {
                 window.open('https://ko-fi.com/yougo', '_blank');
@@ -128,7 +169,7 @@ export async function maybeShowSupportToast() {
 
     if (!lastPromptDate) {
         //console.log('[YNT] No lastPromptDate, checking initial delay...');
-        // First display: 10 seconds after installation (for test)
+        // First display: after initial delay
         if (daysBetween(installationDate, now) >= INITIAL_DELAY) {
             //console.log('[YNT] Showing toast (first time)');
             injectToast();
@@ -138,7 +179,7 @@ export async function maybeShowSupportToast() {
         return;
     }
 
-    // Reminder: 30 days after last reminder (unchanged)
+    // Reminder: after remind delay
     if (daysBetween(lastPromptDate, now) >= REMIND_DELAY) {
         //console.log('[YNT] Showing toast (reminder)');
         injectToast();

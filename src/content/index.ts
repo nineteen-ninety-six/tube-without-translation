@@ -163,6 +163,11 @@ browser.runtime.onMessage.addListener((message: unknown) => {
                     initializeVideoPlayerListener();
                 }
                 break;
+            case 'thumbnails': {
+                    refreshBrowsingVideos();
+                }
+                break;
+
         }
         return true;
     }

@@ -142,13 +142,3 @@ export function isYouTubeDataAPIEnabled(settings: { youtubeDataApi?: { enabled?:
         settings.youtubeDataApi.apiKey.length > 10
     );
 }
-
-/**
- * Detects if the current browser is Safari.
- * @returns True if Safari, false otherwise.
- */
-export function isSafari(): boolean {
-    // Check if browser.runtime.getURL uses safari-web-extension:// protocol
-    const url = browser.runtime.getURL('');
-    return url.startsWith('safari-web-extension://');
-}

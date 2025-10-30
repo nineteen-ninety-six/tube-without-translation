@@ -25,7 +25,7 @@
  * 
  * Strategy to get original subtitles track:
  * 1. Find ASR track to determine original video language
- * 2. Look for manual track in same language
+ * 2. Look for manual track in same language (matching base language code)
  * 3. Apply original language track if found
  */
 
@@ -52,6 +52,22 @@
             `color: ${ERROR_COLOR}`,  // Red color for error message
             ...args
         );
+    }
+
+    /**
+     * Extracts the base language code from a language code
+     * Examples: "en-US" -> "en", "fr-CA" -> "fr", "en" -> "en"
+     */
+    function getBaseLanguageCode(languageCode) {
+        return languageCode ? languageCode.split('-')[0] : '';
+    }
+
+    /**
+     * Checks if two language codes match (comparing base language codes)
+     * Examples: "en" matches "en-US", "fr-CA" matches "fr", "en-GB" matches "en-US"
+     */
+    function languageCodesMatch(code1, code2) {
+        return getBaseLanguageCode(code1) === getBaseLanguageCode(code2);
     }
 
     // Retry counter for setPreferredSubtitles internal logic
@@ -234,12 +250,12 @@
 
                 // Find manual track in original language
                 const originalTrack = captionTracks.find(track => 
-                    track.languageCode === asrTrack.languageCode && !track.kind
+                    languageCodesMatch(track.languageCode, asrTrack.languageCode) && !track.kind
                 );
 
                 // If manual track in original language exists, use it
                 if (originalTrack) {
-                    log(`Setting subtitles to original language (manual): "${originalTrack.name.simpleText}"`);
+                    log(`Setting subtitles to original language (manual): "${originalTrack.name.simpleText}" [${originalTrack.languageCode}]`);
                     player.setOption('captions', 'track', originalTrack);
                     return true;
                 }
@@ -259,11 +275,11 @@
             
             // For specific language preference, search for matching track
             const languageTrack = captionTracks.find(track => 
-                track.languageCode === subtitlesLanguage && !track.kind
+                languageCodesMatch(track.languageCode, subtitlesLanguage) && !track.kind
             );
             
             if (languageTrack) {
-                log(`Setting subtitles to selected language: "${languageTrack.name.simpleText}"`);
+                log(`Setting subtitles to selected language: "${languageTrack.name.simpleText}" [${languageTrack.languageCode}]`);
                 player.setOption('captions', 'track', languageTrack);
                 return true;
             } else {
@@ -283,7 +299,7 @@
                 }
 
                 // Check if ASR is already in target language
-                if (asrTrack.languageCode === subtitlesLanguage) {
+                if (languageCodesMatch(asrTrack.languageCode, subtitlesLanguage)) {
                     log(`Using ASR track in target language: "${asrTrack.name.simpleText}"`);
                     player.setOption('captions', 'track', asrTrack);
                     return true;

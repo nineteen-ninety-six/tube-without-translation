@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added dynamic review link in support toast: displays appropriate store name (Mozilla Add-ons, Chrome Web Store, or Microsoft Store) based on detected browser.
+- Added browser detection utilities (`isFirefox()`, `isChromium()`, `isEdge()`) for platform-specific features.
+
+### Fixed
+- Fixed subtitle track matching to handle regional language variants: tracks like "en-US" and "en-GB" now correctly match ASR tracks with base language code "en". This resolves cases where manual subtitles in original language were not detected due to region-specific language codes.
+
 ## [2.17.1] - 2025-10-20
 
 ### Fix

@@ -96,7 +96,23 @@ function injectToast() {
                 if (koFiContainer) {
                     const reviewSection = document.createElement('div');
                     reviewSection.style.cssText = 'font-size: 0.85em; text-align: center; color: #d1d5db; width: 100%;';
-                    reviewSection.innerHTML = `Can't afford a tip? You can still support me by leaving a 5-star review on <a href="${reviewUrl}" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none; font-weight: 500;">${storeName}</a>!`;
+                    
+                    // Build text content using DOM API instead of innerHTML
+                    const textBefore = document.createTextNode("Can't afford a tip? You can still support me by leaving a 5-star review on ");
+                    
+                    const reviewLink = document.createElement('a');
+                    reviewLink.href = reviewUrl;
+                    reviewLink.target = '_blank';
+                    reviewLink.rel = 'noopener noreferrer';
+                    reviewLink.style.cssText = 'color: #60a5fa; text-decoration: none; font-weight: 500;';
+                    reviewLink.textContent = storeName;
+                    
+                    const textAfter = document.createTextNode('!');
+                    
+                    reviewSection.appendChild(textBefore);
+                    reviewSection.appendChild(reviewLink);
+                    reviewSection.appendChild(textAfter);
+                    
                     koFiContainer.insertAdjacentElement('afterend', reviewSection);
                 }
             }

@@ -12,7 +12,7 @@
 
 import { coreLog, browsingTitlesLog, titlesErrorLog } from '../utils/logger';
 import { currentSettings } from './index';
-import { extractVideoIdFromUrl } from '../utils/video';
+import { extractVideoIdFromUrl, extractVideoIdFromWatchFlexy } from '../utils/video';
 import { applyVideoPlayerSettings } from '../utils/videoSettings';
 import { waitForElement, waitForFilledVideoTitles } from '../utils/dom';
 
@@ -136,7 +136,7 @@ export function setupMainVideoObserver() {
     waitForElement('ytd-watch-flexy').then((watchFlexy) => {
         function checkAndProcessVideo() {
             // Get video ID from DOM
-            const domVideoId = watchFlexy.getAttribute('video-id');
+            const domVideoId = extractVideoIdFromWatchFlexy();
             
             // Get video ID from URL
             const urlVideoId = extractVideoIdFromUrl(window.location.href);
@@ -168,6 +168,8 @@ export function setupMainVideoObserver() {
             // IDs match and video not processed yet - safe to proceed
             lastProcessedVideoId = domVideoId;
             coreLog(`[Video] IDs matched: ${domVideoId}, processing...`);
+            
+            cleanupDescriptionObservers();
             
             // Process video
             if (currentSettings?.descriptionTranslation) {

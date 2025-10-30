@@ -10,8 +10,8 @@
 import { descriptionLog, descriptionErrorLog } from '../../utils/logger';
 import { waitForElement } from '../../utils/dom';
 import { normalizeText } from '../../utils/text';
-import { initializeChaptersReplacement } from '../chapters/chaptersIndex';
 import { calculateSimilarity } from '../../utils/text';
+import { extractVideoIdFromWatchFlexy } from '../../utils/video';
 import { descriptionCache } from './index';
 
 
@@ -73,12 +73,26 @@ export async function refreshDescription(id: string): Promise<void> {
     try {
         await waitForElement('#description-inline-expander');
         
+        // Check if video ID has changed after waiting
+        const currentVideoId = extractVideoIdFromWatchFlexy();
+        if (currentVideoId !== id) {
+            descriptionLog(`Aborting refreshDescription: video changed from ${id} to ${currentVideoId}`);
+            return;
+        }
+        
         // First check if we already have the description in cache
         let description: string | null = descriptionCache.getDescription(id) || null;
 
         // Only fetch if not in cache
         if (!description) {
             description = await fetchOriginalDescription();
+            
+            // Check again after async fetch
+            const stillCurrentVideoId = extractVideoIdFromWatchFlexy();
+            if (stillCurrentVideoId !== id) {
+                descriptionLog(`Aborting refreshDescription after fetch: video changed from ${id} to ${stillCurrentVideoId}`);
+                return;
+            }
             //descriptionLog('Description element found, injecting script');
         } else {
             //escriptionLog('Using cached description');
@@ -87,7 +101,7 @@ export async function refreshDescription(id: string): Promise<void> {
         if (description) {
             const descriptionElement = document.querySelector('#description-inline-expander');
             if (descriptionElement) {
-                // Always updateupdate the element, whether it's in cache or not
+                // Always update the element, whether it's in cache or not
                 updateDescriptionElement(descriptionElement as HTMLElement, description, id);
                 descriptionLog('Description updated to original');
             }
@@ -170,6 +184,13 @@ function createUrlLink(url: string): HTMLAnchorElement {
 
 
 export function updateDescriptionElement(element: HTMLElement, description: string, id: string): void {
+    // Check if video ID has changed before applying description
+    const currentVideoId = extractVideoIdFromWatchFlexy();
+    if (currentVideoId !== id) {
+        descriptionLog(`Aborting description update: video changed from ${id} to ${currentVideoId}`);
+        return;
+    }
+    
     // Find the text containers
     const attributedString = element.querySelector('yt-attributed-string');
     const snippetAttributedString = element.querySelector('#attributed-snippet-text');
@@ -216,12 +237,28 @@ export function updateDescriptionElement(element: HTMLElement, description: stri
 // Compare description text and determine if update is needed
 export function compareDescription(element: HTMLElement, id: string): Promise<{ isOriginal: boolean; description: string | null }> {
     return new Promise(async (resolve) => {
+        // Check if video ID is still current before starting
+        const currentVideoId = extractVideoIdFromWatchFlexy();
+        if (currentVideoId !== id) {
+            descriptionLog(`Aborting compareDescription: video changed from ${id} to ${currentVideoId}`);
+            resolve({ isOriginal: false, description: null });
+            return;
+        }
+        
         // Get the cached description or fetch a new one
         let description: string | null = descriptionCache.getDescription(id) || null;
         
         if (!description) {
             // Fetch description if not cached
             description = await fetchOriginalDescription();
+            
+            // CRITICAL: Check again after async fetch to prevent cache pollution
+            const stillCurrentVideoId = extractVideoIdFromWatchFlexy();
+            if (stillCurrentVideoId !== id) {
+                descriptionLog(`Aborting compareDescription after fetch: video changed from ${id} to ${stillCurrentVideoId}`);
+                resolve({ isOriginal: false, description: null });
+                return;
+            }
         }
         
         // If no description available, we need to update (return false)
@@ -243,7 +280,8 @@ export function compareDescription(element: HTMLElement, id: string): Promise<{ 
             descriptionLog('Description is already in original language, no update needed');
             // Don't cache if already original - save memory
         } else {
-            // Only cache when description is translated (we'll replace it)
+            // Only cache when description is translated
+            // At this point we're certain 'description' corresponds to 'id' thanks to checks above
             descriptionCache.setDescription(id, description);
         }
         
@@ -263,10 +301,31 @@ export async function processDescriptionForVideoId(id: string): Promise<string |
     const descriptionElement = document.querySelector('#description-inline-expander');
     if (descriptionElement) {
         return waitForElement('#movie_player').then(() => {
+            // Check if video ID is still current after waiting
+            const currentVideoId = extractVideoIdFromWatchFlexy();
+            if (currentVideoId !== id) {
+                descriptionLog(`Aborting processDescriptionForVideoId: video changed from ${id} to ${currentVideoId}`);
+                return null;
+            }
+            
             return compareDescription(descriptionElement as HTMLElement, id).then(({ isOriginal, description }) => {
+                // Check again after compareDescription
+                const stillCurrentVideoId = extractVideoIdFromWatchFlexy();
+                if (stillCurrentVideoId !== id) {
+                    descriptionLog(`Aborting after compareDescription: video changed from ${id} to ${stillCurrentVideoId}`);
+                    return null;
+                }
+                
                 if (!isOriginal) {
                     // Only refresh if not original
                     return refreshDescription(id).then(() => {
+                        // Final check before setting up observers
+                        const finalVideoId = extractVideoIdFromWatchFlexy();
+                        if (finalVideoId !== id) {
+                            descriptionLog(`Aborting observer setup: video changed from ${id} to ${finalVideoId}`);
+                            return null;
+                        }
+                        
                         descriptionExpandObserver(id);
                         setupDescriptionContentObserver(id);
                         
@@ -282,7 +341,21 @@ export async function processDescriptionForVideoId(id: string): Promise<string |
     } else {
         // If not found, wait for it
         return waitForElement('#description-inline-expander').then(() => {
+            // Check if video ID is still current after waiting
+            const currentVideoId = extractVideoIdFromWatchFlexy();
+            if (currentVideoId !== id) {
+                descriptionLog(`Aborting processDescriptionForVideoId (element wait): video changed from ${id} to ${currentVideoId}`);
+                return null;
+            }
+            
             return refreshDescription(id).then(() => {
+                // Final check before setting up observers
+                const finalVideoId = extractVideoIdFromWatchFlexy();
+                if (finalVideoId !== id) {
+                    descriptionLog(`Aborting observer setup (after wait): video changed from ${id} to ${finalVideoId}`);
+                    return null;
+                }
+                
                 descriptionExpandObserver(id);
                 setupDescriptionContentObserver(id);
                 

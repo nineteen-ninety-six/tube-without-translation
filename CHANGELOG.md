@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fixed subtitle track matching to handle regional language variants: tracks like "en-US" and "en-GB" now correctly match ASR tracks with base language code "en". This resolves cases where manual subtitles in original language were not detected due to region-specific language codes.
+- Fixed race conditions in description processing during SPA navigation. This prevents incorrect descriptions from being displayed or cached when users navigate rapidly between videos, especially when moving from a translated video to a non-translated one.
 
 ## [2.17.1] - 2025-10-20
 

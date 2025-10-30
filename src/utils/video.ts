@@ -7,10 +7,11 @@
  * This program is distributed without any warranty; see the license for details.
  */
 
+
 import { browsingTitlesErrorLog } from './logger';
 
 
-export function extractVideoIdFromUrl(videoUrl: string): string | null {
+function extractVideoIdFromUrl(videoUrl: string): string | null {
     try {
         const url = new URL(videoUrl);
 
@@ -31,19 +32,30 @@ export function extractVideoIdFromUrl(videoUrl: string): string | null {
 }
 
 /**
+ * Gets the current video ID from the watch-flexy element
+ * @returns Current video ID or null if not available
+ */
+function extractVideoIdFromWatchFlexy(): string | null {
+    const watchFlexy = document.querySelector('ytd-watch-flexy');
+    return watchFlexy?.getAttribute('video-id') || null;
+}
+
+
+/**
  * Detects if the current YouTube player is using the new Delhi UI
  * @returns true if the new player (Delhi UI) is detected, false otherwise
  */
-export function isNewYouTubePlayer(): boolean {
+function isNewYouTubePlayer(): boolean {
     const player = getYouTubePlayer();
     return player?.classList.contains('ytp-delhi-modern') ?? false;
 }
+
 
 /**
  * Gets the appropriate YouTube player element based on current page context
  * @returns the player element or null if not found
  */
-export function getYouTubePlayer(): HTMLElement | null {
+function getYouTubePlayer(): HTMLElement | null {
     // Determine target player ID based on current URL
     let targetId = 'movie_player'; // Default for regular videos
     
@@ -55,3 +67,7 @@ export function getYouTubePlayer(): HTMLElement | null {
     
     return document.getElementById(targetId);
 }
+
+
+
+export { extractVideoIdFromUrl, extractVideoIdFromWatchFlexy, isNewYouTubePlayer, getYouTubePlayer };
